@@ -10,7 +10,6 @@
 </head>
 <body>
 
-  <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <div class="logo">
@@ -85,9 +84,7 @@
     </div>
   </aside>
 
-  <!-- MAIN -->
   <main class="main" id="main">
-
     <header class="topbar">
       <div class="topbar-left">
         <h1 class="page-title" id="pageTitle">Dashboard</h1>
@@ -104,7 +101,7 @@
       </div>
     </header>
 
-    <!-- VIEW: DASHBOARD -->
+    <!-- DASHBOARD -->
     <section class="view active" id="view-dashboard">
       <div class="stats-grid" id="statsGrid"></div>
       <div class="dashboard-bottom">
@@ -122,7 +119,7 @@
       </div>
     </section>
 
-    <!-- VIEW: VEICULOS -->
+    <!-- VEICULOS -->
     <section class="view" id="view-veiculos">
       <div class="toolbar">
         <div class="filter-group">
@@ -147,7 +144,8 @@
             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
               <line x1="8" y1="18" x2="21" y2="18"/>
-              <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/>
+              <line x1="3" y1="6" x2="3.01" y2="6"/>
+              <line x1="3" y1="12" x2="3.01" y2="12"/>
               <line x1="3" y1="18" x2="3.01" y2="18"/>
             </svg>
           </button>
@@ -156,16 +154,15 @@
       <div class="veiculos-grid" id="veiculosGrid"></div>
     </section>
 
-    <!-- VIEW: VENCIMENTOS -->
+    <!-- VENCIMENTOS -->
     <section class="view" id="view-vencimentos">
       <div class="vencimentos-wrap" id="vencimentosWrap"></div>
     </section>
 
-    <!-- VIEW: DOCUMENTOS -->
+    <!-- DOCUMENTOS -->
     <section class="view" id="view-documentos">
       <div class="documentos-wrap" id="documentosWrap"></div>
     </section>
-
   </main>
 
   <!-- MODAL: NOVO / EDITAR -->
@@ -240,10 +237,8 @@
     </div>
   </div>
 
-  <!-- TOAST -->
   <div class="toast-wrap" id="toastWrap"></div>
 
-  <!-- SheetJS para XLS -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <script src="app.js"></script>
 </body>
