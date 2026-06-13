@@ -456,13 +456,14 @@
     }
     .tvg{display:flex;gap:5px}
 
-    /* GRADE */
+    /* GRADE / LISTA */
     .grade{
       display:grid;
       grid-template-columns:repeat(auto-fill,minmax(275px,1fr));
       gap:13px;
     }
     .grade.ls{grid-template-columns:1fr}
+    
     .vc{
       background:var(--bg2);
       border:1px solid var(--brd);
@@ -470,18 +471,64 @@
       padding:15px;
       cursor:pointer;
       transition:.18s;
+      display:flex;
+      flex-direction:column;
+      position: relative;
     }
     .vc:hover{
       border-color:rgba(255,179,0,.3);
       transform:translateY(-1px);
       box-shadow:0 8px 22px rgba(0,0,0,.28);
     }
+    .grade.ls .vc {
+      flex-direction: row;
+      align-items: center;
+      gap: 15px;
+      padding: 12px 15px;
+    }
+
+    /* MULTI SELEÇÃO CHECKBOX */
+    .vc-check-wrap {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      margin-right: 5px;
+    }
+    .grade.ls .vc-check-wrap {
+      display: flex;
+    }
+    .vc-check-wrap input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--ac);
+      cursor: pointer;
+    }
+
+    .vc-body-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .grade.ls .vc-body-content {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: 20px;
+    }
+
     .vc-tp{
       display:flex;
       align-items:flex-start;
       gap:11px;
       margin-bottom:11px;
     }
+    .grade.ls .vc-tp {
+      margin-bottom: 0;
+      width: 25%;
+      flex-shrink: 0;
+    }
+
     .vc-ico{
       width:40px;height:40px;border-radius:10px;
       background:rgba(255,179,0,.07);
@@ -491,6 +538,7 @@
     }
     .vc-nm{font-size:14px;font-weight:700;line-height:1.2}
     .vc-pl{font-size:12px;color:var(--sub);margin-top:3px;letter-spacing:.4px}
+    
     .vc-mt{
       display:flex;
       flex-direction:column;
@@ -499,14 +547,28 @@
       color:var(--sub);
       margin-bottom:11px;
     }
+    .grade.ls .vc-mt {
+      margin-bottom: 0;
+      flex-direction: row;
+      gap: 15px;
+      flex: 1;
+    }
+
     .vc-ft{
       display:flex;
       align-items:center;
       justify-content:space-between;
+      margin-top: auto;
+    }
+    .grade.ls .vc-ft {
+      margin-top: 0;
+      width: 20%;
+      justify-content: flex-end;
+      gap: 15px;
     }
     .vc-ac{display:flex;gap:5px}
 
-    /* STATUS */
+    /* STATUS CORES */
     .st{
       padding:3px 10px;
       border-radius:20px;
@@ -516,6 +578,90 @@
     .stR{background:rgba(34,197,94,.1);color:#22c55e}
     .stP{background:rgba(245,158,11,.1);color:#f59e0b}
     .stV{background:rgba(239,68,68,.1);color:#ef4444}
+
+    /* KANBAN ESTRUTURA */
+    .kanban-board {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      align-items: start;
+      height: calc(100vh - 150px);
+      overflow-x: auto;
+    }
+    .kanban-col {
+      background: var(--bg2);
+      border: 1px solid var(--brd);
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      max-height: 100%;
+      overflow: hidden;
+    }
+    .kanban-col-h {
+      padding: 12px 15px;
+      border-bottom: 1px solid var(--brd);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 700;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .kanban-col-c {
+      background: rgba(255,179,0,0.1);
+      color: var(--ac);
+      border-radius: 20px;
+      padding: 1px 8px;
+      font-size: 11px;
+    }
+    .kanban-list {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .kb-card {
+      background: var(--bg3);
+      border: 1px solid var(--brd);
+      border-radius: 10px;
+      padding: 12px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .kb-card:hover {
+      border-color: rgba(255,179,0,0.3);
+    }
+    .kb-card h4 {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .kb-card p {
+      font-size: 11px;
+      color: var(--sub);
+      margin-bottom: 8px;
+    }
+    .kb-card-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 8px;
+    }
+    .kb-card-actions button {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ac);
+      background: rgba(255,179,0,0.07);
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    .kb-card-actions button:hover {
+      background: rgba(255,179,0,0.15);
+    }
 
     /* VENCIMENTOS */
     .vr{
@@ -778,10 +924,10 @@
 
     @media (max-width: 1200px){
       .stats-g{grid-template-columns:repeat(2,1fr)}
-      .dash-c{grid-template-columns:1fr}
       .fgrid,.det-g,.doc-add{grid-template-columns:1fr}
       .vr{grid-template-columns:1fr 120px}
       .vr-dt,.vr-ds{display:none}
+      .kanban-board { grid-template-columns: 1fr; height: auto; }
     }
   </style>
 </head>
@@ -816,7 +962,14 @@
           <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/>
           <rect x="9" y="11" width="14" height="10" rx="2"/>
         </svg>
-        <span class="hid">Veículos</span>
+        <span class="hid">Estoque / Veículos</span>
+      </button>
+
+      <button class="nb" data-view="kanban">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M4 3h4v18H4zM10 3h4v10h-4zM16 3h4v6h-4z"/>
+        </svg>
+        <span class="hid">Kanban Transferência</span>
       </button>
 
       <button class="nb" data-view="vencimentos">
@@ -909,7 +1062,7 @@
 
     <section class="view" id="view-veiculos">
       <div class="tlb">
-        <div class="flt">
+        <div class="flt" style="align-items: center;">
           <select id="filtroTipo">
             <option value="">Todos os tipos</option>
             <option>Carro</option>
@@ -924,6 +1077,10 @@
             <option>Pendente</option>
             <option>Vencido</option>
           </select>
+
+          <button class="bdn" id="btnExcluirLote" style="display: none; padding: 8px 14px; font-size: 13px; font-weight: 700;">
+            ✕ Excluir Selecionados (<span id="lblQtdeLote">0</span>)
+          </button>
         </div>
         <div class="tvg">
           <button class="tv on" id="btnGrade" title="Grade">
@@ -941,6 +1098,27 @@
         </div>
       </div>
       <div id="veiculosGrid" class="grade"></div>
+    </section>
+
+    <section class="view" id="view-kanban">
+      <div class="kanban-board">
+        <div class="kanban-col" data-step="entrada">
+          <div class="kanban-col-h"><span>1. Entrada Estoque</span><span class="kanban-col-c" id="count-entrada">0</span></div>
+          <div class="kanban-list" id="list-entrada"></div>
+        </div>
+        <div class="kanban-col" data-step="vistoria">
+          <div class="kanban-col-h"><span>2. Vistoria / Laudo</span><span class="kanban-col-c" id="count-vistoria">0</span></div>
+          <div class="kanban-list" id="list-vistoria"></div>
+        </div>
+        <div class="kanban-col" data-step="andamento">
+          <div class="kanban-col-h"><span>3. Em Andamento</span><span class="kanban-col-c" id="count-andamento">0</span></div>
+          <div class="kanban-list" id="list-andamento"></div>
+        </div>
+        <div class="kanban-col" data-step="concluido">
+          <div class="kanban-col-h"><span>4. Concluído</span><span class="kanban-col-c" id="count-concluido">0</span></div>
+          <div class="kanban-list" id="list-concluido"></div>
+        </div>
+      </div>
     </section>
 
     <section class="view" id="view-vencimentos">
@@ -986,6 +1164,15 @@
           <div class="fg">
             <label>Proprietário</label>
             <input id="fProprietario">
+          </div>
+          <div class="fg">
+            <label>Etapa da Transferência (Kanban)</label>
+            <select id="fFaseKanban">
+              <option value="entrada">1. Entrada Estoque</option>
+              <option value="vistoria">2. Vistoria / Laudo</option>
+              <option value="andamento">3. Em Andamento (Detran/Cartório)</option>
+              <option value="concluido">4. Concluído / Documento na Mão</option>
+            </select>
           </div>
           <div class="fg">
             <label>Observações</label>
@@ -1133,12 +1320,6 @@
         <polyline points="14,2 14,8 20,8"/>
       </svg>`;
     }
-    function calIcon(size=20){
-      return `<svg width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <rect x="3" y="4" width="18" height="18" rx="2"/>
-        <path d="M16 2v4M8 2v4M3 10h18"/>
-      </svg>`;
-    }
 
     function renderView(v){
       view = v;
@@ -1146,11 +1327,12 @@
       $(`#view-${v}`).classList.add('on');
       $$('.nb').forEach(b => b.classList.toggle('on', b.dataset.view === v));
 
-      const titles = {dashboard:'Dashboard', veiculos:'Veículos', vencimentos:'Vencimentos', documentos:'Documentos'};
+      const titles = {dashboard:'Dashboard', veiculos:'Estoque / Veículos', vencimentos:'Vencimentos', documentos:'Documentos', kanban:'Kanban de Transferência'};
       $('#pgTitle').textContent = titles[v] || v;
 
       if (v === 'dashboard') renderDashboard();
-      if (v === 'veiculos') renderVeiculos();
+      if (v === 'veiculos') { renderVeiculos(); checkLoteButton(); }
+      if (v === 'kanban') renderKanban();
       if (v === 'vencimentos') renderVencimentos();
       if (v === 'documentos') renderDocumentos();
     }
@@ -1242,7 +1424,7 @@
         el.innerHTML = `
           <div class="empty" style="grid-column:1/-1">
             <h3>Nenhum veículo encontrado</h3>
-            <p>Clique em "+ Novo Veículo" para cadastrar.</p>
+            <p>Clique em "+ Novo Veículo" para cadastrar ou importe seu estoque.</p>
           </div>
         `;
         return;
@@ -1258,35 +1440,111 @@
 
         return `
           <div class="vc" data-id="${v.id}" style="animation-delay:${i * .03}s">
-            <div class="vc-tp">
-              <div class="vc-ico">${carIcon(21)}</div>
-              <div>
-                <div class="vc-nm">${esc(v.apelido || 'Sem nome')}</div>
-                <div class="vc-pl">${esc(v.placa || '---')}</div>
-              </div>
+            <div class="vc-check-wrap">
+              <input type="checkbox" class="chk-veiculo" data-id="${v.id}">
             </div>
-            <div class="vc-mt">${meta.join('')}</div>
-            <div class="vc-ft">
-              <span class="st ${statusClass(v.status)}">${esc(v.status || 'Regular')}</span>
-              <div class="vc-ac">
-                <button class="bsm" data-action="edit" data-id="${v.id}" title="Editar">${editIcon()}</button>
-                <button class="bsm" data-action="del" data-id="${v.id}" title="Excluir">${trashIcon()}</button>
+            
+            <div class="vc-body-content">
+              <div class="vc-tp">
+                <div class="vc-ico">${carIcon(21)}</div>
+                <div>
+                  <div class="vc-nm">${esc(v.apelido || 'Sem nome')}</div>
+                  <div class="vc-pl">${esc(v.placa || '---')}</div>
+                </div>
+              </div>
+              <div class="vc-mt">${meta.join('')}</div>
+              <div class="vc-ft">
+                <span class="st ${statusClass(v.status)}">${esc(v.status || 'Regular')}</span>
+                <div class="vc-ac">
+                  <button class="bsm" data-action="edit" data-id="${v.id}" title="Editar">${editIcon()}</button>
+                  <button class="bsm" data-action="del" data-id="${v.id}" title="Excluir">${trashIcon()}</button>
+                </div>
               </div>
             </div>
           </div>
         `;
       }).join('');
+      
+      // Vincula eventos nos novos checkboxes gerados
+      $$('.chk-veiculo').forEach(chk => {
+        chk.addEventListener('change', checkLoteButton);
+        chk.addEventListener('click', e => e.stopPropagation()); // Evita abrir o modal detalhe ao marcar
+      });
     }
 
-    function nextDue(v){
-      let best = null;
-      dateFields.forEach(f => {
-        if (!v[f.k]) return;
-        const d = daysLeft(v[f.k]);
-        if (d === null) return;
-        if (!best || d < best.d) best = {l:f.l, d, c:dayColor(d), t:dayText(d)};
+    // --- NOVA LOGICA DO KANBAN DE TRANSFERÊNCIAS ---
+    function renderKanban() {
+      const colunas = { entrada: [], vistoria: [], andamento: [], concluido: [] };
+      
+      // Organiza veículos nas colunas corretas
+      db.forEach(v => {
+        const fase = v.faseKanban || 'entrada';
+        if (colunas[fase]) colunas[fase].push(v);
       });
-      return best;
+
+      // Renderiza as listas
+      Object.keys(colunas).forEach(fase => {
+        $(`#count-${fase}`).textContent = colunas[fase].length;
+        const listEl = $(`#list-${fase}`);
+        
+        if (!colunas[fase].length) {
+          listEl.innerHTML = `<div style="font-size:11px; color:var(--mut); text-align:center; padding:20px 0;">Nenhum carro nesta fase</div>`;
+          return;
+        }
+
+        listEl.innerHTML = colunas[fase].map(v => {
+          let botoesFluxo = '';
+          if (fase === 'entrada') botoesFluxo = `<button data-move="vistoria" data-id="${v.id}">Avançar ›</button>`;
+          if (fase === 'vistoria') botoesFluxo = `<button data-move="entrada">‹ Voltar</button><button data-move="andamento" data-id="${v.id}">Avançar ›</button>`;
+          if (fase === 'andamento') botoesFluxo = `<button data-move="vistoria">‹ Voltar</button><button data-move="concluido" data-id="${v.id}">Concluir ✓</button>`;
+          if (fase === 'concluido') botoesFluxo = `<button data-move="andamento">‹ Reabrir</button>`;
+
+          return `
+            <div class="kb-card" data-id="${v.id}">
+              <h4>${esc(v.apelido)}</h4>
+              <p>Placa: <strong>${esc(v.placa || '---')}</strong><br>Prop: ${esc(v.proprietario || 'Não inf.')}</p>
+              <div class="kb-card-actions">
+                ${botoesFluxo}
+              </div>
+            </div>
+          `;
+        }).join('');
+      });
+    }
+
+    function alterarFaseKanban(id, novaFase) {
+      const v = db.find(x => x.id === id);
+      if (v) {
+        v.faseKanban = novaFase;
+        v.atualizadoEm = new Date().toISOString();
+        saveDB();
+        renderKanban();
+        toast('Etapa de transferência atualizada', 'ok');
+      }
+    }
+
+    function checkLoteButton() {
+      const marcados = $$('.chk-veiculo:checked');
+      const btn = $('#btnExcluirLote');
+      if (listMode && marcados.length > 0) {
+        $('#lblQtdeLote').textContent = marcados.length;
+        btn.style.display = 'inline-block';
+      } else {
+        btn.style.display = 'none';
+      }
+    }
+
+    function executarExcluirLote() {
+      const marcados = $$('.chk-veiculo:checked');
+      if (!marcados.length) return;
+      
+      if (confirm(`Tem certeza que deseja excluir permanentemente estes ${marcados.length} veículos selecionados?`)) {
+        const idsParaRemover = marcados.map(chk => chk.dataset.id);
+        db = db.filter(x => !idsParaRemover.includes(x.id));
+        saveDB();
+        renderView('veiculos');
+        toast('Veículos excluídos em lote com sucesso!', 'ok');
+      }
     }
 
     function renderVencimentos(){
@@ -1389,6 +1647,7 @@
       $('#fRenavam').value = v?.renavam || '';
       $('#fChassi').value = v?.chassi || '';
       $('#fProprietario').value = v?.proprietario || '';
+      $('#fFaseKanban').value = v?.faseKanban || 'entrada';
       $('#fObs').value = v?.obs || '';
       $('#fIpva').value = v?.ipva || '';
       $('#fLicenciamento').value = v?.licenciamento || '';
@@ -1406,67 +1665,12 @@
       editId = null;
     }
 
-    function saveVehicle(){
-      const data = {
-        id: $('#veiculoId').value || uid(),
-        apelido: $('#fApelido').value.trim(),
-        placa: $('#fPlaca').value.trim(),
-        tipo: $('#fTipo').value.trim(),
-        status: $('#fStatus').value.trim() || 'Regular',
-        marca: $('#fMarca').value.trim(),
-        modelo: $('#fModelo').value.trim(),
-        ano: $('#fAno').value.trim(),
-        cor: $('#fCor').value.trim(),
-        renavam: $('#fRenavam').value.trim(),
-        chassi: $('#fChassi').value.trim(),
-        proprietario: $('#fProprietario').value.trim(),
-        obs: $('#fObs').value.trim(),
-        ipva: $('#fIpva').value,
-        licenciamento: $('#fLicenciamento').value,
-        seguro: $('#fSeguro').value,
-        cnh: $('#fCnh').value,
-        revisao: $('#fRevisao').value,
-        vistoria: $('#fVistoria').value
-      };
-
-      if (!data.apelido || !data.placa || !data.tipo){
-        toast('Preencha Apelido, Placa e Tipo', 'warn');
-        return;
-      }
-
-      const idx = db.findIndex(x => x.id === data.id);
-      if (idx >= 0){
-        db[idx] = { ...db[idx], ...data, atualizadoEm: new Date().toISOString(), documentos: db[idx].documentos || [] };
-      } else {
-        db.unshift({ ...data, criadoEm: new Date().toISOString(), atualizadoEm: new Date().toISOString(), documentos: [] });
-      }
-
-      saveDB();
-      closeModal();
-      renderView(view);
-      toast('Veículo salvo com sucesso', 'ok');
-    }
-
-    function deleteVehicle(id){
-      const v = db.find(x => x.id === id);
-      if (!v) return;
-      if (!confirm(`Excluir "${v.apelido || v.placa || 'veículo'}"?`)) return;
-      db = db.filter(x => x.id !== id);
-      saveDB();
-      if (detailId === id) closeDetail();
-      renderView(view);
-      toast('Veículo excluído', 'ok');
-    }
-
-    function closeDetail() {
-      $('#modalDetalhe').classList.remove('on');
-      detailId = null;
-    }
-
     function openDetail(id){
       const v = db.find(x => x.id === id);
       if (!v) return;
       detailId = id;
+
+      const fAsMap = { entrada: '1. Entrada Estoque', vistoria: '2. Vistoria/Laudo', andamento: '3. Em Andamento', concluido: '4. Concluído' };
 
       const info = [
         ['Apelido', v.apelido],
@@ -1480,6 +1684,7 @@
         ['RENAVAM', v.renavam],
         ['Chassi', v.chassi],
         ['Proprietário', v.proprietario],
+        ['Fase de Transferência', fAsMap[v.faseKanban || 'entrada']],
         ['Criado em', fmtDate(v.criadoEm?.slice(0,10))]
       ];
 
@@ -1525,57 +1730,15 @@
           </div>
 
           <div class="det-c" style="grid-column:1/-1">
-            <h3>Adicionar documento / Fotos</h3>
-            <div class="doc-add">
-              <div class="fg">
-                <label>Arquivo</label>
-                <input type="file" id="docFile" accept=".pdf,.jpg,.jpeg,.png,.webp">
-              </div>
-              <div class="fg">
-                <label>Nome do Doc</label>
-                <input id="docNome" placeholder="Ex: CRLV 2026">
-              </div>
-              <div class="fg">
-                <label>Tipo</label>
-                <select id="docTipo">
-                  <option>Outro</option>
-                  <option>CRLV</option>
-                  <option>PDF</option>
-                  <option>Foto</option>
-                  <option>Comprovante</option>
-                </select>
-              </div>
-              <button class="bac" id="btnUploadDoc">Salvar Doc</button>
-            </div>
-
-            <div id="detDocsList" style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px;">
-              ${(v.documentos || []).map((d, idx) => {
-                if (d.tipo === 'Foto' || d.url.startsWith('http')) {
-                  return `
-                    <div style="background: var(--bg4); border: 1px solid var(--brd); border-radius: 8px; padding: 6px; text-align: center; position: relative;">
-                      <img src="${d.url}" style="width: 100%; height: 110px; object-fit: cover; border-radius: 6px; background:#000;" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'50\' height=\'50\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%235d5d5d\' stroke-width=\'2\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><polyline points=\'21,15 16,10 5,21\'/></svg>'">
-                      <div style="font-size: 11px; font-weight: 600; margin: 5px 0 2px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${esc(d.nome)}</div>
-                      <div style="display: flex; gap: 4px; justify-content: center; margin-top: 4px;">
-                        <a class="bgh" href="${d.url}" download="${esc(d.nome)}" target="_blank" style="font-size:10px; padding:3px 6px; border-radius:4px;">Baixar</a>
-                        <button class="bdn" data-action="del-doc" data-vid="${v.id}" data-idx="${idx}" style="font-size:10px; padding:3px 6px; border-radius:4px;">✕</button>
-                      </div>
-                    </div>
-                  `;
-                }
-                return `
-                  <div class="doc-item" style="grid-column: 1/-1;">
-                    ${docIcon(14)}
-                    <div>
-                      <strong>${esc(d.nome)}</strong> 
-                      <small style="color:var(--sub)">(${esc(d.tipo)}${d.size ? ' — ' + fmtBytes(d.size) : ''})</small>
-                    </div>
-                    <div class="x" style="display:flex; gap:5px;">
-                      <a class="bgh" href="${d.url}" download="${esc(d.nome)}" target="_blank" style="font-size:11px; padding:4px 8px; border-radius:6px;">Abrir</a>
-                      <button class="bdn" data-action="del-doc" data-vid="${v.id}" data-idx="${idx}" style="font-size:11px; padding:4px 8px; border-radius:6px;">✕</button>
-                    </div>
-                  </div>
-                `;
-              }).join('')}
+            <h3>Ficha de Anexo / Fotos</h3>
+            <div id="detDocsList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px;">
+              ${(v.documentos || []).map((d, idx) => `
+                <div style="background: var(--bg4); border: 1px solid var(--brd); border-radius: 8px; padding: 6px; text-align: center;">
+                  <img src="${d.url}" style="width: 100%; height: 110px; object-fit: cover; border-radius: 6px; background:#000;">
+                  <div style="font-size: 11px; font-weight: 600; margin: 5px 0 2px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${esc(d.nome)}</div>
+                  <a class="bgh" href="${d.url}" download="${esc(d.nome)}" target="_blank" style="font-size:10px; display:inline-block; margin-top:4px; padding:3px 6px; border-radius:4px;">Baixar Foto</a>
+                </div>
+              `).join('')}
             </div>
           </div>
         </div>
@@ -1584,120 +1747,39 @@
       $('#modalDetalhe').classList.add('on');
     }
 
-    function handleDocUpload() {
-      const fileInput = $('#docFile');
-      const nomeInput = $('#docNome');
-      const tipoSelect = $('#docTipo');
-
-      if (!fileInput || !fileInput.files.length) {
-        toast('Selecione um arquivo', 'warn');
-        return;
-      }
-
-      const file = fileInput.files[0];
-      const nome = nomeInput.value.trim() || file.name;
-      const tipo = tipoSelect.value;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const docData = {
-          nome,
-          tipo,
-          size: file.size,
-          url: e.target.result
-        };
-
-        const v = db.find(x => x.id === detailId);
-        if (v) {
-          if (!v.documentos) v.documentos = [];
-          v.documentos.push(docData);
-          saveDB();
-          toast('Documento adicionado', 'ok');
-          openDetail(detailId);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function handleDocDelete(vId, idx) {
-      const v = db.find(x => x.id === vId);
-      if (v && v.documentos) {
-        v.documentos.splice(idx, 1);
-        saveDB();
-        toast('Documento removido', 'ok');
-        if (detailId === vId) {
-          openDetail(vId);
-        } else {
-          renderDocumentos();
-        }
-      }
-    }
-
-    // --- LEITOR XML ESTRUTURADO PARA O PADRÃO DA BOOM SISTEMAS ---
     function parseBoomXml(xmlString) {
       try {
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(xmlString, "text/xml");
-        
         let veiculosTags = xmlDoc.getElementsByTagName("veiculo");
-        if (!veiculosTags.length) veiculosTags = xmlDoc.getElementsByTagName("item");
-        if (!veiculosTags.length) veiculosTags = xmlDoc.getElementsByTagName("vehicle");
 
-        if (!veiculosTags.length) {
-          toast('Nenhum veículo estruturado no XML', 'warn');
-          return;
-        }
+        if (!veiculosTags.length) veiculosTags = xmlDoc.getElementsByTagName("item");
+
+        if (!veiculosTags.length) { toast('Nenhum veículo mapeado neste arquivo XML', 'warn'); return; }
 
         const novosVeiculos = [];
 
         for (let i = 0; i < veiculosTags.length; i++) {
           const vNode = veiculosTags[i];
-
           const read = tag => {
             const el = vNode.getElementsByTagName(tag)[0];
             return el && el.textContent ? el.textContent.trim() : '';
           };
 
-          // EXTRAÇÃO DE FOTOS DO PADRÃO BOOM (<midias><foto>...</foto></midias>)
           const fotosArray = [];
           const midiasContainer = vNode.getElementsByTagName("midias")[0];
-          
           if (midiasContainer) {
             const fotosLinks = midiasContainer.getElementsByTagName("foto");
             for (let j = 0; j < fotosLinks.length; j++) {
               if (fotosLinks[j] && fotosLinks[j].textContent) {
-                fotosArray.push({
-                  nome: `Foto ${j + 1}`,
-                  tipo: 'Foto',
-                  url: fotosLinks[j].textContent.trim()
-                });
-              }
-            }
-          } else {
-            // Varre fotos avulsas se não houver a tag pai <midias>
-            const fotosLinksSoltas = vNode.getElementsByTagName("foto");
-            for (let j = 0; j < fotosLinksSoltas.length; j++) {
-              if (fotosLinksSoltas[j] && fotosLinksSoltas[j].textContent) {
-                fotosArray.push({
-                  nome: `Foto ${j + 1}`,
-                  tipo: 'Foto',
-                  url: fotosLinksSoltas[j].textContent.trim()
-                });
+                fotosArray.push({ nome: `Foto ${j + 1}`, tipo: 'Foto', url: fotosLinks[j].textContent.trim() });
               }
             }
           }
 
-          const marca = read('marca') || read('brand');
-          const modelo = read('modelo') || read('model');
-          
-          // CRIAÇÃO DO NOME E VERSÃO PARA NÃO FICAR VAZIO
-          let versao = read('versao') || read('version') || read('submodelo');
-          if (!versao) {
-            const motor = read('motorizacao') || read('motor') || '';
-            const camb = read('cambio') || '';
-            versao = (motor + ' ' + camb).trim();
-          }
-          
+          const marca = read('marca');
+          const modelo = read('modelo');
+          let versao = read('versao') || read('submodelo') || (read('motorizacao') ? read('motorizacao') + ' ' + read('cambio') : '');
           const nomeCarro = versao ? `${modelo} ${versao}` : modelo || 'Veículo Sem Nome';
 
           novosVeiculos.push({
@@ -1706,37 +1788,30 @@
             atualizadoEm: new Date().toISOString(),
             documentos: fotosArray,
             apelido: nomeCarro,
-            placa: read('placa') || read('plate'),
-            tipo: read('tipo') || read('type') || 'Carro',
+            placa: read('placa'),
+            tipo: read('tipo') || 'Carro',
             status: 'Regular',
             marca: marca,
             modelo: modelo,
-            ano: read('ano_fabricacao') || read('ano_modelo') || read('year'),
-            cor: read('cor') || read('color'),
+            ano: read('ano_fabricacao') || read('ano_modelo'),
+            cor: read('cor'),
             renavam: read('renavam'),
-            chassi: read('chassi') || read('vin'),
+            chassi: read('chassi'),
             proprietario: 'Estoque Central',
-            obs: read('observacao') || read('opcionais') || read('descricao'),
-            ipva:'', licenciamento:'', seguro:'', cnh:'', revisao:'', vistoria:''
+            faseKanban: 'entrada', // Começam todos na fase inicial
+            obs: [read('observacao'), read('opcionais')].filter(Boolean).join('\n')
           });
         }
 
         const placasExistentes = db.map(x => norm(x.placa)).filter(Boolean);
         const filtrados = novosVeiculos.filter(x => !placasExistentes.includes(norm(x.placa)));
 
-        if (filtrados.length === 0) {
-          toast('Todos os carros deste XML já constam no painel', 'warn');
-          return;
-        }
+        if (!filtrados.length) { toast('Nenhum veículo novo para carregar', 'warn'); return; }
 
         db = [...filtrados, ...db];
-        saveDB();
-        renderView(view);
-        toast(`${filtrados.length} carros adicionados com fotos e nomes!`, 'ok');
-      } catch (err) {
-        console.error(err);
-        toast('Erro de leitura nas tags do arquivo XML', 'err');
-      }
+        saveDB(); renderView(view);
+        toast(`${filtrados.length} carros injetados no estoque com sucesso!`, 'ok');
+      } catch { toast('Falha crônica ao ler tags do XML', 'err'); }
     }
 
     // EVENTOS DO SISTEMA
@@ -1751,92 +1826,75 @@
 
     $('#btnNovoVeiculo').addEventListener('click', () => openModal());
     $('#btnSalvar').addEventListener('click', saveVehicle);
+    $('#btnExcluirLote').addEventListener('click', executarExcluirLote);
 
     $$('[data-close]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        $(`#${btn.dataset.close}`).classList.remove('on');
-      });
+      btn.addEventListener('click', () => { $(`#${btn.dataset.close}`).classList.remove('on'); });
     });
 
     document.addEventListener('click', e => {
-      const vcCard = e.target.closest('.vc, .ai, .vr, .db-h');
-      const actionBtn = e.target.closest('button, a');
+      // Abre Detalhes de qualquer item clicado que tenha ID mapeado
+      const vcCard = e.target.closest('.vc, .ai, .vr, .kb-card');
+      const actionBtn = e.target.closest('button, a, input[type="checkbox"]');
       
       if (vcCard && !actionBtn) {
         const id = vcCard.dataset.id;
         if (id) openDetail(id);
       }
 
+      // Tratamento das ações rápidas (Kanban Avançar/Voltar e Botões do card)
       if (actionBtn) {
+        const move = actionBtn.dataset.move;
+        const kbCard = actionBtn.closest('.kb-card');
+        
+        if (move && kbCard) {
+          e.stopPropagation();
+          alterarFaseKanban(kbCard.dataset.id, move);
+        }
+
         const act = actionBtn.dataset.action;
         const id = actionBtn.dataset.id;
-        
-        if (act === 'edit') {
-          e.stopPropagation();
-          openModal(id);
-        } else if (act === 'del') {
-          e.stopPropagation();
-          deleteVehicle(id);
-        } else if (act === 'del-doc') {
-          e.stopPropagation();
-          handleDocDelete(actionBtn.dataset.vid, parseInt(actionBtn.dataset.idx));
-        }
+        if (act === 'edit') { e.stopPropagation(); openModal(id); }
+        if (act === 'del') { e.stopPropagation(); deleteVehicle(id); }
       }
 
-      if (e.target.id === 'detEdit') {
-        const id = e.target.dataset.id;
-        closeDetail();
-        openModal(id);
-      }
-      if (e.target.id === 'detDelete') {
-        deleteVehicle(e.target.dataset.id);
-      }
-      if (e.target.id === 'btnUploadDoc') {
-        handleDocUpload();
-      }
+      if (e.target.id === 'detEdit') { openModal(e.target.dataset.id); closeDetail(); }
+      if (e.target.id === 'detDelete') { deleteVehicle(e.target.dataset.id); }
     });
 
-    // Filtros e Busca
+    // Filtros
     $('#searchInput').addEventListener('input', e => {
       search = norm(e.target.value);
       if (view === 'veiculos') renderVeiculos();
     });
-    $('#filtroTipo').addEventListener('change', renderVeiculos);
-    $('#filtroStatus').addEventListener('change', renderVeiculos);
+    $('#filtroTipo').addEventListener('change', () => renderView('veiculos'));
+    $('#filtroStatus').addEventListener('change', () => renderView('veiculos'));
 
-    // Modos de Visualização
+    // Modos de visualização alternados
     $('#btnGrade').addEventListener('click', () => {
       listMode = false;
       $('#btnGrade').classList.add('on');
       $('#btnLista').classList.remove('on');
-      renderVeiculos();
+      renderView('veiculos');
     });
     $('#btnLista').addEventListener('click', () => {
       listMode = true;
       $('#btnLista').classList.add('on');
       $('#btnGrade').classList.remove('on');
-      renderVeiculos();
+      renderView('veiculos');
     });
 
-    // Exportar Banco de Dados Completo (.JSON)
+    // Exportações de backup
     $('#btnExportar').addEventListener('click', () => {
-      if (!db.length) { toast('Nenhum dado para backup', 'warn'); return; }
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `mer_crm_backup_${new Date().toISOString().slice(0,10)}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-      toast('Backup JSON gerado', 'ok');
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+      const anchor = document.createElement('a');
+      anchor.setAttribute("href", dataStr);
+      anchor.setAttribute("download", `backup_mer_crm_${new Date().toISOString().slice(0,10)}.json`);
+      anchor.click();
     });
 
-    // Exportar Estoque Atual como arquivo XML (No formato Boom Sistemas)
     $('#btnExportarXml').addEventListener('click', () => {
-      if (!db.length) { toast('Estoque vazio para conversão', 'warn'); return; }
-      
       let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<estoque>\n';
-      
       db.forEach(v => {
         xml += '  <veiculo>\n';
         xml += `    <placa>${esc(v.placa)}</placa>\n`;
@@ -1844,97 +1902,37 @@
         xml += `    <modelo>${esc(v.modelo)}</modelo>\n`;
         xml += `    <versao>${esc(v.apelido)}</versao>\n`;
         xml += `    <tipo>${esc(v.tipo)}</tipo>\n`;
-        xml += `    <ano_fabricacao>${esc(v.ano)}</ano_fabricacao>\n`;
-        xml += `    <ano_modelo>${esc(v.ano)}</ano_modelo>\n`;
         xml += `    <cor>${esc(v.cor)}</cor>\n`;
         xml += `    <chassi>${esc(v.chassi)}</chassi>\n`;
         xml += `    <renavam>${esc(v.renavam)}</renavam>\n`;
         xml += `    <observacao>${esc(v.obs)}</observacao>\n`;
-        
-        const fotos = (v.documentos || []).filter(d => d.tipo === 'Foto' || d.url.startsWith('http'));
-        if (fotos.length) {
-          xml += '    <midias>\n';
-          fotos.forEach(f => {
-            xml += `      <foto>${esc(f.url)}</foto>\n`;
-          });
-          xml += '    </midias>\n';
-        }
-        
         xml += '  </veiculo>\n';
       });
-      
       xml += '</estoque>';
-
       const blob = new Blob([xml], { type: 'text/xml' });
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.href = URL.createObjectURL(blob);
-      downloadAnchor.setAttribute("download", `mer_seminovos_estoque_${new Date().toISOString().slice(0,10)}.xml`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-      toast('Arquivo XML gerado!', 'ok');
+      const anchor = document.createElement('a');
+      anchor.href = URL.createObjectURL(blob);
+      anchor.setAttribute("download", "estoque_mer.xml");
+      anchor.click();
     });
 
-    // Importador Universal Unificado (Lê planilhas Excel, arquivos .xml ou backups .json)
     $('#btnImportar').addEventListener('click', () => $('#inputImportar').click());
     $('#inputImportar').addEventListener('change', e => {
       const file = e.target.files[0];
       if (!file) return;
-      
       const ext = file.name.split('.').pop().toLowerCase();
       const reader = new FileReader();
 
-      if (ext === 'xlsx' || ext === 'xls') {
-        reader.onload = function(evt) {
-          try {
-            const data = new Uint8Array(evt.target.result);
-            const workbook = XLSX.read(data, { type: 'array' });
-            const firstSheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[firstSheetName];
-            const rows = XLSX.utils.sheet_to_json(worksheet);
-
-            if (!rows.length) { toast('A planilha selecionada está vazia', 'warn'); return; }
-
-            const pick = (row, aliases) => {
-              const keys = Object.keys(row);
-              for (const a of aliases) {
-                const f = keys.find(k => norm(k) === norm(a));
-                if (f !== undefined) return String(row[f] ?? '').trim();
-              }
-              return '';
-            };
-
-            const importedVehicles = rows.map(row => ({
-              id: uid(), criadoEm: new Date().toISOString(), atualizadoEm: new Date().toISOString(), documentos: [],
-              apelido: pick(row, ['Apelido', 'Nome', 'Apelido / Nome']),
-              placa: pick(row, ['Placa']), tipo: pick(row, ['Tipo']) || 'Carro', status: pick(row, ['Status']) || 'Regular',
-              marca: pick(row, ['Marca']), modelo: pick(row, ['Modelo']), ano: pick(row, ['Ano']), cor: pick(row, ['Cor']),
-              renavam: pick(row, ['RENAVAM', 'Renavam']), chassi: pick(row, ['Chassi']), proprietario: pick(row, ['Proprietario', 'Dono']),
-              obs: pick(row, ['Observacoes', 'Obs']), ipva:'', licenciamento:'', seguro:'', cnh:'', revisao:'', vistoria:''
-            }));
-
-            db = [...importedVehicles, ...db];
-            saveDB(); renderView(view);
-            toast(`${importedVehicles.length} veículos carregados do Excel!`, 'ok');
-          } catch { toast('Falha ao interpretar arquivo do Excel', 'err'); }
-        };
-        reader.readAsArrayBuffer(file);
-
-      } else if (ext === 'xml') {
-        reader.onload = function(evt) {
-          parseBoomXml(evt.target.result);
-        };
+      if (ext === 'xml') {
+        reader.onload = evt => parseBoomXml(evt.target.result);
         reader.readAsText(file);
-
       } else {
-        reader.onload = function(evt) {
+        reader.onload = evt => {
           try {
-            const imported = JSON.parse(evt.target.result);
-            if (Array.isArray(imported)) {
-              db = imported; saveDB(); renderView(view);
-              toast('Backup JSON restaurado', 'ok');
-            } else { toast('Arquivo de backup inválido', 'err'); }
-          } catch { toast('Erro ao descriptografar arquivo JSON', 'err'); }
+            db = JSON.parse(evt.target.result);
+            saveDB(); renderView(view);
+            toast('Backup restaurado!', 'ok');
+          } catch { toast('Arquivo inválido', 'err'); }
         };
         reader.readAsText(file);
       }
