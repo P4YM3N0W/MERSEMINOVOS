@@ -70,7 +70,7 @@
       display:flex;
       align-items:center;
       justify-content:space-between;
-      padding:15px 11px;
+      padding:12px 11px;
       border-bottom:1px solid var(--brd);
       gap:8px;
       flex-shrink:0;
@@ -79,8 +79,13 @@
       display:flex;
       align-items:center;
       gap:9px;
-      color:var(--ac);
       min-width:0;
+    }
+    .sb-logo img {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+      flex-shrink: 0;
     }
     .sb-brand{
       display:flex;
@@ -93,14 +98,18 @@
       font-family:'Montserrat',sans-serif;
       font-size:16px;
       font-weight:900;
-      color:var(--ac);
+      color:var(--txt);
     }
     .bs{
       font-size:9px;
       font-weight:800;
-      color:var(--ac2);
+      color:var(--ac);
       text-transform:uppercase;
       letter-spacing:1.5px;
+    }
+    #sidebar.collapsed .sb-logo img {
+      width: 36px;
+      height: 36px;
     }
     #btnToggle{
       width:26px;
@@ -567,17 +576,6 @@
     }
     .vc-ac{display:flex;gap:5px}
 
-    /* STATUS CORES */
-    .st{
-      padding:3px 10px;
-      border-radius:20px;
-      font-size:11px;
-      font-weight:700;
-    }
-    .stR{background:rgba(34,197,94,.1);color:#22c55e}
-    .stP{background:rgba(245,158,11,.1);color:#f59e0b}
-    .stV{background:rgba(239,68,68,.1);color:#ef4444}
-
     /* KANBAN ESTRUTURA */
     .kanban-board {
       display: grid;
@@ -934,7 +932,8 @@
   <aside id="sidebar">
     <div class="sb-h">
       <div class="sb-logo">
-        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+        <img src="LOGOTIPO.png" alt="MeR Seminovos" onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='block';">
+        <svg id="logoFallback" style="display:none;" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
           <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/>
           <rect x="9" y="11" width="14" height="10" rx="2"/>
           <circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
@@ -1224,7 +1223,6 @@
     const $$ = s => [...document.querySelectorAll(s)];
     const uid = () => (crypto?.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2));
     
-    // FUNÇÃO CORRIGIDA PARA CORRETA EXPORTAÇÃO SEM ERRO DE CARACTERES
     const esc = s => String(s ?? '')
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
@@ -1273,7 +1271,6 @@
       return isNaN(x) ? '—' : x.toLocaleDateString('pt-BR');
     }
 
-    // FORMATAÇÃO DE ARQUIVOS
     function fmtBytes(bytes) {
       if (!bytes) return '0 B';
       const k = 1024;
@@ -1472,7 +1469,6 @@
       });
     }
 
-    // --- PAINEL KANBAN COM SUPORTE A FOTOS EXECUTADO COM SUCESSO ---
     function renderKanban() {
       const colunas = { entrada: [], vistoria: [], andamento: [], concluido: [] };
       
@@ -1497,7 +1493,6 @@
           if (fase === 'andamento') botoesFluxo = `<button data-move="vistoria" data-id="${v.id}">‹ Voltar</button><button data-move="concluido" data-id="${v.id}">Concluir ✓</button>`;
           if (fase === 'concluido') botoesFluxo = `<button data-move="andamento" data-id="${v.id}">‹ Reabrir</button>`;
 
-          // Localiza a primeira imagem se houver
           const primeiraFoto = (v.documentos || []).find(d => d.tipo === 'Foto' || d.url.startsWith('http'));
           const tagFotoHtml = primeiraFoto ? `<img src="${primeiraFoto.url}" style="width:100%; height:85px; object-fit:cover; border-radius:6px; margin-bottom:8px; background:#000;">` : '';
 
@@ -1885,7 +1880,7 @@
       renderView('veiculos');
     });
 
-    // --- CORREÇÃO DO BOTÃO DE EXPORTAR JSON (BACKUP) ---
+    // BACKUP JSON CORRIGIDO E TOTALMENTE OPERACIONAL
     $('#btnExportarJson').addEventListener('click', () => {
       if (!db.length) { toast('Nenhum dado para fazer backup', 'warn'); return; }
       try {
@@ -1902,7 +1897,7 @@
       }
     });
 
-    // --- CORREÇÃO DO BOTÃO DE EXPORTAR XML ---
+    // EXPORTAR XML CORRIGIDO E TOTALMENTE OPERACIONAL
     $('#btnExportarXml').addEventListener('click', () => {
       if (!db.length) { toast('Estoque vazio para conversão', 'warn'); return; }
       try {
