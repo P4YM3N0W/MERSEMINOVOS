@@ -421,6 +421,9 @@
       display:flex;align-items:center;justify-content:center;
       color:var(--ac);flex-shrink:0;
     }
+    .ai-ico img{
+      width:100%;height:100%;object-fit:cover;border-radius:7px;
+    }
     .ai-inf{
       flex:1;min-width:0;
     }
@@ -543,6 +546,10 @@
       border:1px solid rgba(255,179,0,.14);
       display:flex;align-items:center;justify-content:center;
       color:var(--ac);flex-shrink:0;
+      overflow:hidden;
+    }
+    .vc-ico img{
+      width:100%;height:100%;object-fit:cover;
     }
     .vc-nm{font-size:14px;font-weight:700;line-height:1.2}
     .vc-pl{font-size:12px;color:var(--sub);margin-top:3px;letter-spacing:.4px}
@@ -717,7 +724,7 @@
       display:flex;align-items:center;justify-content:center;
       color:var(--ac);flex-shrink:0;
     }
-    .dr-inf{
+    .dr-inf">.dr-inf{
       flex:1;min-width:0;
     }
     .dr-inf strong{
@@ -1383,9 +1390,11 @@
       const sorted = db.slice().sort((a,b) => new Date(b.criadoEm) - new Date(a.criadoEm));
       $('#ultimosCadastros').innerHTML = sorted.length ? sorted.slice(0,6).map(v => {
         const sub = [v.marca, v.modelo, v.ano].filter(Boolean).join(' ') + (v.placa ? ` — ${v.placa}` : '');
+        const pf = (v.documentos || []).find(d => d.tipo === 'Foto' || d.url.startsWith('http'));
+        const thumb = pf ? `<img src="${pf.url}">` : carIcon(15);
         return `
           <div class="ai" data-id="${v.id}">
-            <div class="ai-ico">${carIcon(15)}</div>
+            <div class="ai-ico">${thumb}</div>
             <div class="ai-inf">
               <strong>${esc(v.apelido || 'Sem nome')}</strong>
               <small>${esc(sub || '—')}</small>
@@ -1436,6 +1445,9 @@
         if (v.proprietario) meta.push(`<span>Prop: <strong>${esc(v.proprietario)}</strong></span>`);
         if (pv) meta.push(`<span style="color:${pv.c}">${esc(pv.l)}: ${esc(pv.t)}</span>`);
 
+        const pf = (v.documentos || []).find(d => d.tipo === 'Foto' || d.url.startsWith('http'));
+        const thumb = pf ? `<img src="${pf.url}">` : carIcon(21);
+
         return `
           <div class="vc" data-id="${v.id}" style="animation-delay:${i * .03}s">
             <div class="vc-check-wrap">
@@ -1444,7 +1456,7 @@
             
             <div class="vc-body-content">
               <div class="vc-tp">
-                <div class="vc-ico">${carIcon(21)}</div>
+                <div class="vc-ico">${thumb}</div>
                 <div>
                   <div class="vc-nm">${esc(v.apelido || 'Sem nome')}</div>
                   <div class="vc-pl">${esc(v.placa || '---')}</div>
@@ -1517,7 +1529,7 @@
         v.atualizadoEm = new Date().toISOString();
         saveDB();
         renderKanban();
-        toast('Etapa de transferência atualizada', 'ok');
+        toast('Etapa de transferência updated', 'ok');
       }
     }
 
@@ -1880,7 +1892,7 @@
       renderView('veiculos');
     });
 
-    // BACKUP JSON CORRIGIDO E TOTALMENTE OPERACIONAL
+    // BACKUP JSON CORRIGIDO E OPERACIONAL
     $('#btnExportarJson').addEventListener('click', () => {
       if (!db.length) { toast('Nenhum dado para fazer backup', 'warn'); return; }
       try {
@@ -1897,7 +1909,7 @@
       }
     });
 
-    // EXPORTAR XML CORRIGIDO E TOTALMENTE OPERACIONAL
+    // EXPORTAR XML CORRIGIDO E OPERACIONAL
     $('#btnExportarXml').addEventListener('click', () => {
       if (!db.length) { toast('Estoque vazio para conversão', 'warn'); return; }
       try {
@@ -1962,6 +1974,70 @@
       }
       e.target.value = '';
     });
+
+    function saveVehicle(){
+      const data = {
+        id: $('#veiculoId').value || uid(),
+        apelido: $('#fApelido').value.trim(),
+        placa: $('#fPlaca').value.trim(),
+        tipo: $('#fTipo').value.trim(),
+        status: $('#fStatus').value.trim() || 'Regular',
+        marca: $('#fMarca').value.trim(),
+        modelo: $('#fModelo').value.trim(),
+        ano: $('#fAno').value.trim(),
+        cor: $('#fCor').value.trim(),
+        renavam: $('#fRenavam').value.trim(),
+        chassi: $('#fChassi').value.trim(),
+        proprietario: $('#fProprietario').value.trim(),
+        faseKanban: $('#fFaseKanban').value,
+        obs: $('#fObs').value.trim(),
+        ipva: $('#fIpva').value,
+        licenciamento: $('#fLicenciamento').value,
+        seguro: $('#fSeguro').value,
+        cnh: $('#fCnh').value,
+        revisao: $('#fRevisao').value,
+        vistoria: $('#fVistoria').value
+      };
+
+      if (!data.apelido || !data.placa || !data.tipo){
+        toast('Preencha Apelido, Placa e Tipo', 'warn');
+        return;
+      }
+
+      const idx = db.findIndex(x => x.id === data.id);
+      if (idx >= 0){
+        db[idx] = { ...db[idx], ...data, atualizadoEm: new Date().toISOString(), documentos: db[idx].documentos || [] };
+      } else {
+        db.unshift({ ...data, criadoEm: new Date().toISOString(), atualizadoEm: new Date().toISOString(), documentos: [] });
+      }
+
+      saveDB();
+      closeModal();
+      renderView(view);
+      toast('Veículo salvo com sucesso', 'ok');
+    }
+
+    function deleteVehicle(id){
+      const v = db.find(x => x.id === id);
+      if (!v) return;
+      if (!confirm(`Excluir "${v.apelido || v.placa || 'veículo'}"?`)) return;
+      db = db.filter(x => x.id !== id);
+      saveDB();
+      if (detailId === id) closeDetail();
+      renderView(view);
+      toast('Veículo excluído', 'ok');
+    }
+
+    function nextDue(v){
+      let best = null;
+      dateFields.forEach(f => {
+        if (!v[f.k]) return;
+        const d = daysLeft(v[f.k]);
+        if (d === null) return;
+        if (!best || d < best.d) best = {l:f.l, d, c:dayColor(d), t:dayText(d)};
+      });
+      return best;
+    }
 
     db = loadDB();
     renderView('dashboard');
