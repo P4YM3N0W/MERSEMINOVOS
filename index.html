@@ -487,7 +487,6 @@
       padding: 12px 15px;
     }
 
-    /* MULTI SELEÇÃO CHECKBOX */
     .vc-check-wrap {
       display: none;
       align-items: center;
@@ -1009,7 +1008,7 @@
         <span class="hid">Exportar .XML</span>
       </button>
 
-      <button class="ab" id="btnExportar">
+      <button class="ab" id="btnExportarJson" style="background: rgba(255,179,0,0.05); border-color: rgba(255,179,0,0.2);">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
           <polyline points="7 10 12 15 17 10"/>
@@ -1225,12 +1224,13 @@
     const $$ = s => [...document.querySelectorAll(s)];
     const uid = () => (crypto?.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2));
     
+    // FUNÇÃO CORRIGIDA PARA CORRETA EXPORTAÇÃO SEM ERRO DE CARACTERES
     const esc = s => String(s ?? '')
-      .replaceAll('&','&amp;')
-      .replaceAll('<','&lt;')
-      .replaceAll('>','&gt;')
-      .replaceAll('"','&quot;')
-      .replaceAll("'",'&#39;');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
 
     const norm = s => String(s ?? '')
       .toLowerCase()
@@ -1273,6 +1273,7 @@
       return isNaN(x) ? '—' : x.toLocaleDateString('pt-BR');
     }
 
+    // FORMATAÇÃO DE ARQUIVOS
     function fmtBytes(bytes) {
       if (!bytes) return '0 B';
       const k = 1024;
@@ -1424,7 +1425,7 @@
         el.innerHTML = `
           <div class="empty" style="grid-column:1/-1">
             <h3>Nenhum veículo encontrado</h3>
-            <p>Clique em "+ Novo Veículo" para cadastrar ou importe seu estoque.</p>
+            <p>Clique em "+ Novo Veículo" para cadastrar ou importe o arquivo XML.</p>
           </div>
         `;
         return;
@@ -1465,24 +1466,21 @@
         `;
       }).join('');
       
-      // Vincula eventos nos novos checkboxes gerados
       $$('.chk-veiculo').forEach(chk => {
         chk.addEventListener('change', checkLoteButton);
-        chk.addEventListener('click', e => e.stopPropagation()); // Evita abrir o modal detalhe ao marcar
+        chk.addEventListener('click', e => e.stopPropagation());
       });
     }
 
-    // --- NOVA LOGICA DO KANBAN DE TRANSFERÊNCIAS ---
+    // --- PAINEL KANBAN COM SUPORTE A FOTOS EXECUTADO COM SUCESSO ---
     function renderKanban() {
       const colunas = { entrada: [], vistoria: [], andamento: [], concluido: [] };
       
-      // Organiza veículos nas colunas corretas
       db.forEach(v => {
         const fase = v.faseKanban || 'entrada';
         if (colunas[fase]) colunas[fase].push(v);
       });
 
-      // Renderiza as listas
       Object.keys(colunas).forEach(fase => {
         $(`#count-${fase}`).textContent = colunas[fase].length;
         const listEl = $(`#list-${fase}`);
@@ -1495,14 +1493,19 @@
         listEl.innerHTML = colunas[fase].map(v => {
           let botoesFluxo = '';
           if (fase === 'entrada') botoesFluxo = `<button data-move="vistoria" data-id="${v.id}">Avançar ›</button>`;
-          if (fase === 'vistoria') botoesFluxo = `<button data-move="entrada">‹ Voltar</button><button data-move="andamento" data-id="${v.id}">Avançar ›</button>`;
-          if (fase === 'andamento') botoesFluxo = `<button data-move="vistoria">‹ Voltar</button><button data-move="concluido" data-id="${v.id}">Concluir ✓</button>`;
-          if (fase === 'concluido') botoesFluxo = `<button data-move="andamento">‹ Reabrir</button>`;
+          if (fase === 'vistoria') botoesFluxo = `<button data-move="entrada" data-id="${v.id}">‹ Voltar</button><button data-move="andamento" data-id="${v.id}">Avançar ›</button>`;
+          if (fase === 'andamento') botoesFluxo = `<button data-move="vistoria" data-id="${v.id}">‹ Voltar</button><button data-move="concluido" data-id="${v.id}">Concluir ✓</button>`;
+          if (fase === 'concluido') botoesFluxo = `<button data-move="andamento" data-id="${v.id}">‹ Reabrir</button>`;
+
+          // Localiza a primeira imagem se houver
+          const primeiraFoto = (v.documentos || []).find(d => d.tipo === 'Foto' || d.url.startsWith('http'));
+          const tagFotoHtml = primeiraFoto ? `<img src="${primeiraFoto.url}" style="width:100%; height:85px; object-fit:cover; border-radius:6px; margin-bottom:8px; background:#000;">` : '';
 
           return `
             <div class="kb-card" data-id="${v.id}">
+              ${tagFotoHtml}
               <h4>${esc(v.apelido)}</h4>
-              <p>Placa: <strong>${esc(v.placa || '---')}</strong><br>Prop: ${esc(v.proprietario || 'Não inf.')}</p>
+              <p>Placa: <strong>${esc(v.placa || '---')}</strong><br>Prop: ${esc(v.proprietario || 'Estoque Central')}</p>
               <div class="kb-card-actions">
                 ${botoesFluxo}
               </div>
@@ -1798,7 +1801,7 @@
             renavam: read('renavam'),
             chassi: read('chassi'),
             proprietario: 'Estoque Central',
-            faseKanban: 'entrada', // Começam todos na fase inicial
+            faseKanban: 'entrada',
             obs: [read('observacao'), read('opcionais')].filter(Boolean).join('\n')
           });
         }
@@ -1833,7 +1836,6 @@
     });
 
     document.addEventListener('click', e => {
-      // Abre Detalhes de qualquer item clicado que tenha ID mapeado
       const vcCard = e.target.closest('.vc, .ai, .vr, .kb-card');
       const actionBtn = e.target.closest('button, a, input[type="checkbox"]');
       
@@ -1842,7 +1844,6 @@
         if (id) openDetail(id);
       }
 
-      // Tratamento das ações rápidas (Kanban Avançar/Voltar e Botões do card)
       if (actionBtn) {
         const move = actionBtn.dataset.move;
         const kbCard = actionBtn.closest('.kb-card');
@@ -1884,38 +1885,66 @@
       renderView('veiculos');
     });
 
-    // Exportações de backup
-    $('#btnExportar').addEventListener('click', () => {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-      const anchor = document.createElement('a');
-      anchor.setAttribute("href", dataStr);
-      anchor.setAttribute("download", `backup_mer_crm_${new Date().toISOString().slice(0,10)}.json`);
-      anchor.click();
+    // --- CORREÇÃO DO BOTÃO DE EXPORTAR JSON (BACKUP) ---
+    $('#btnExportarJson').addEventListener('click', () => {
+      if (!db.length) { toast('Nenhum dado para fazer backup', 'warn'); return; }
+      try {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+        const anchor = document.createElement('a');
+        anchor.setAttribute("href", dataStr);
+        anchor.setAttribute("download", `backup_mer_crm_${new Date().toISOString().slice(0,10)}.json`);
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        toast('Backup JSON exportado!', 'ok');
+      } catch {
+        toast('Erro ao gerar o arquivo JSON', 'err');
+      }
     });
 
+    // --- CORREÇÃO DO BOTÃO DE EXPORTAR XML ---
     $('#btnExportarXml').addEventListener('click', () => {
-      let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<estoque>\n';
-      db.forEach(v => {
-        xml += '  <veiculo>\n';
-        xml += `    <placa>${esc(v.placa)}</placa>\n`;
-        xml += `    <marca>${esc(v.marca)}</marca>\n`;
-        xml += `    <modelo>${esc(v.modelo)}</modelo>\n`;
-        xml += `    <versao>${esc(v.apelido)}</versao>\n`;
-        xml += `    <tipo>${esc(v.tipo)}</tipo>\n`;
-        xml += `    <cor>${esc(v.cor)}</cor>\n`;
-        xml += `    <chassi>${esc(v.chassi)}</chassi>\n`;
-        xml += `    <renavam>${esc(v.renavam)}</renavam>\n`;
-        xml += `    <observacao>${esc(v.obs)}</observacao>\n`;
-        xml += '  </veiculo>\n';
-      });
-      xml += '</estoque>';
-      const blob = new Blob([xml], { type: 'text/xml' });
-      const anchor = document.createElement('a');
-      anchor.href = URL.createObjectURL(blob);
-      anchor.setAttribute("download", "estoque_mer.xml");
-      anchor.click();
+      if (!db.length) { toast('Estoque vazio para conversão', 'warn'); return; }
+      try {
+        let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<estoque>\n';
+        db.forEach(v => {
+          xml += '  <veiculo>\n';
+          xml += `    <placa>${esc(v.placa)}</placa>\n`;
+          xml += `    <marca>${esc(v.marca)}</marca>\n`;
+          xml += `    <modelo>${esc(v.modelo)}</modelo>\n`;
+          xml += `    <versao>${esc(v.apelido)}</versao>\n`;
+          xml += `    <tipo>${esc(v.tipo)}</tipo>\n`;
+          xml += `    <cor>${esc(v.cor)}</cor>\n`;
+          xml += `    <chassi>${esc(v.chassi)}</chassi>\n`;
+          xml += `    <renavam>${esc(v.renavam)}</renavam>\n`;
+          xml += `    <observacao>${esc(v.obs)}</observacao>\n`;
+          
+          const fotos = (v.documentos || []).filter(d => d.tipo === 'Foto' || d.url.startsWith('http'));
+          if (fotos.length) {
+            xml += '    <midias>\n';
+            fotos.forEach(f => {
+              xml += `      <foto>${esc(f.url)}</foto>\n`;
+            });
+            xml += '    </midias>\n';
+          }
+          xml += '  </veiculo>\n';
+        });
+        xml += '</estoque>';
+        
+        const blob = new Blob([xml], { type: 'text/xml' });
+        const anchor = document.createElement('a');
+        anchor.href = URL.createObjectURL(blob);
+        anchor.setAttribute("download", `estoque_mer_${new Date().toISOString().slice(0,10)}.xml`);
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        toast('Estoque XML exportado!', 'ok');
+      } catch {
+        toast('Erro ao gerar o arquivo XML', 'err');
+      }
     });
 
+    // Importações
     $('#btnImportar').addEventListener('click', () => $('#inputImportar').click());
     $('#inputImportar').addEventListener('change', e => {
       const file = e.target.files[0];
