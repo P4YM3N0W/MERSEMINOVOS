@@ -1548,20 +1548,34 @@
               <button class="bac" id="btnUploadDoc">Salvar Doc</button>
             </div>
 
-            <div id="detDocsList" style="margin-top: 15px;">
-              ${(v.documentos || []).map((d, idx) => `
-                <div class="doc-item">
-                  ${docIcon(14)}
-                  <div>
-                    <strong>${esc(d.nome)}</strong> 
-                    <small style="color:var(--sub)">(${esc(d.tipo)}${d.size ? ' — ' + fmtBytes(d.size) : ''})</small>
+            <div id="detDocsList" style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px;">
+              ${(v.documentos || []).map((d, idx) => {
+                if (d.tipo === 'Foto' || d.url.startsWith('http')) {
+                  return `
+                    <div style="background: var(--bg4); border: 1px solid var(--brd); border-radius: 8px; padding: 6px; text-align: center; position: relative;">
+                      <img src="${d.url}" style="width: 100%; height: 110px; object-fit: cover; border-radius: 6px; background:#000;" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'50\' height=\'50\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%235d5d5d\' stroke-width=\'2\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><polyline points=\'21,15 16,10 5,21\'/></svg>'">
+                      <div style="font-size: 11px; font-weight: 600; margin: 5px 0 2px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${esc(d.nome)}</div>
+                      <div style="display: flex; gap: 4px; justify-content: center; margin-top: 4px;">
+                        <a class="bgh" href="${d.url}" download="${esc(d.nome)}" target="_blank" style="font-size:10px; padding:3px 6px; border-radius:4px;">Baixar</a>
+                        <button class="bdn" data-action="del-doc" data-vid="${v.id}" data-idx="${idx}" style="font-size:10px; padding:3px 6px; border-radius:4px;">✕</button>
+                      </div>
+                    </div>
+                  `;
+                }
+                return `
+                  <div class="doc-item" style="grid-column: 1/-1;">
+                    ${docIcon(14)}
+                    <div>
+                      <strong>${esc(d.nome)}</strong> 
+                      <small style="color:var(--sub)">(${esc(d.tipo)}${d.size ? ' — ' + fmtBytes(d.size) : ''})</small>
+                    </div>
+                    <div class="x" style="display:flex; gap:5px;">
+                      <a class="bgh" href="${d.url}" download="${esc(d.nome)}" target="_blank" style="font-size:11px; padding:4px 8px; border-radius:6px;">Abrir</a>
+                      <button class="bdn" data-action="del-doc" data-vid="${v.id}" data-idx="${idx}" style="font-size:11px; padding:4px 8px; border-radius:6px;">✕</button>
+                    </div>
                   </div>
-                  <div class="x" style="display:flex; gap:5px;">
-                    <a class="bgh" href="${d.url}" download="${esc(d.nome)}" target="_blank" style="font-size:11px; padding:4px 8px; border-radius:6px;">Abrir</a>
-                    <button class="bdn" data-action="del-doc" data-vid="${v.id}" data-idx="${idx}" style="font-size:11px; padding:4px 8px; border-radius:6px;">✕</button>
-                  </div>
-                </div>
-              `).join('')}
+                `;
+              }).join('')}
             </div>
           </div>
         </div>
@@ -1619,7 +1633,7 @@
       }
     }
 
-    // --- PARSER XML CORRIGIDO PARA O PADRÃO REAL DA BOOM SISTEMAS ---
+    // --- LEITOR XML ESTRUTURADO PARA O PADRÃO DA BOOM SISTEMAS ---
     function parseBoomXml(xmlString) {
       try {
         const parser = new DOMParser();
@@ -1644,9 +1658,10 @@
             return el && el.textContent ? el.textContent.trim() : '';
           };
 
-          // CORREÇÃO DAS FOTOS: A Boom Sistemas usa a tag estrutural <midias> contendo múltiplos blocos <foto>
+          // EXTRAÇÃO DE FOTOS DO PADRÃO BOOM (<midias><foto>...</foto></midias>)
           const fotosArray = [];
           const midiasContainer = vNode.getElementsByTagName("midias")[0];
+          
           if (midiasContainer) {
             const fotosLinks = midiasContainer.getElementsByTagName("foto");
             for (let j = 0; j < fotosLinks.length; j++) {
@@ -1659,7 +1674,7 @@
               }
             }
           } else {
-            // Fallback caso venha solto no nó principal
+            // Varre fotos avulsas se não houver a tag pai <midias>
             const fotosLinksSoltas = vNode.getElementsByTagName("foto");
             for (let j = 0; j < fotosLinksSoltas.length; j++) {
               if (fotosLinksSoltas[j] && fotosLinksSoltas[j].textContent) {
@@ -1675,8 +1690,14 @@
           const marca = read('marca') || read('brand');
           const modelo = read('modelo') || read('model');
           
-          // CORREÇÃO DO NOME/APELIDO: Monta dinamicamente caso a tag versão venha vazia
-          const versao = read('versao') || read('version') || read('combustivel') || (read('portas') ? read('portas') + 'P' : '');
+          // CRIAÇÃO DO NOME E VERSÃO PARA NÃO FICAR VAZIO
+          let versao = read('versao') || read('version') || read('submodelo');
+          if (!versao) {
+            const motor = read('motorizacao') || read('motor') || '';
+            const camb = read('cambio') || '';
+            versao = (motor + ' ' + camb).trim();
+          }
+          
           const nomeCarro = versao ? `${modelo} ${versao}` : modelo || 'Veículo Sem Nome';
 
           novosVeiculos.push({
