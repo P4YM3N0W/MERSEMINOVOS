@@ -1,34 +1,23 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>MeR Seminovos | CRM Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MeR Seminovos | CRM</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
         <div class="logo">MeR Seminovos CRM</div>
         <nav>
-            <button class="nav-btn" onclick="view('cadastro')">Novo Veículo</button>
-            <button class="nav-btn" onclick="view('estoque')">Estoque</button>
-            <button class="nav-btn" onclick="backup()">Backup</button>
+            <button class="nav-btn" onclick="show('cadastro')">➕ Novo Cadastro</button>
+            <button class="nav-btn" onclick="show('estoque')">📦 Estoque</button>
+            <button class="nav-btn" onclick="exportar()">💾 Exportar Dados</button>
         </nav>
     </header>
 
     <main id="app">
-        <div id="cadastro" class="view">
-            <div class="card">
-                <h2>Dados do Veículo</h2>
-                <input type="hidden" id="editIndex" value="-1">
-                <input type="text" id="modelo" placeholder="Modelo">
-                <input type="text" id="placa" placeholder="Placa">
-                <button class="btn-main" onclick="salvar()">Salvar Cadastro</button>
-            </div>
-        </div>
-        <div id="estoque" class="view" style="display:none;">
-            <div class="grid" id="lista"></div>
-        </div>
-    </main>
+        </main>
     <script src="script.js"></script>
 </body>
 </html>
