@@ -1,116 +1,40 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>MeR Seminovos CRM</title>
-  <style>
-    :root { --bg:#080808; --bg2:#111; --ac:#ffb300; --txt:#f0f0f0; --brd:#333; }
-    body { font-family: sans-serif; background: var(--bg); color: var(--txt); display: flex; height: 100vh; margin: 0; }
-    aside { width: 250px; background: var(--bg2); border-right: 1px solid var(--brd); padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-    main { flex: 1; padding: 20px; overflow: auto; }
-    .view { display: none; } .view.active { display: block; }
-    button { padding: 10px; cursor: pointer; background: #222; color: #fff; border: 1px solid var(--brd); border-radius: 5px; }
-    button:hover { background: var(--ac); color: #000; }
-    .kanban-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-    .column { background: #1a1a1a; padding: 10px; border-radius: 8px; min-height: 400px; }
-    .card { background: #333; padding: 10px; margin-bottom: 10px; border-radius: 5px; cursor: move; }
-  </style>
+    <meta charset="UTF-8">
+    <title>MeR Seminovos | Enterprise CRM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS FUTURISTA */
+        body { margin: 0; background: #000; color: #fff; font-family: 'Inter', sans-serif; }
+        .sidebar { width: 250px; height: 100vh; background: #0a0a0a; border-right: 1px solid #222; }
+        .dashboard { padding: 40px; }
+        .card-sql { background: #111; border: 1px solid #333; padding: 20px; border-radius: 12px; }
+    </style>
 </head>
 <body>
+    <div class="sidebar">
+        <button id="btnSync">Sincronizar SQL</button>
+    </div>
+    <div class="dashboard">
+        <div class="card-sql">
+            <h2>Gestão de Estoque SQL</h2>
+            <div id="gridVeiculos"></div>
+        </div>
+    </div>
 
-<aside>
-    <img src="LOGOTIPO.png" style="width:100%" onerror="this.style.display='none'">
-    <button onclick="switchView('dashboard')">Dashboard</button>
-    <button onclick="switchView('veiculos')">Estoque</button>
-    <button onclick="switchView('kanban')">Kanban</button>
-    <button id="btnImportar">Importar XML/JSON</button>
-    <button id="btnExportar">Backup JSON</button>
-    <input type="file" id="inputImportar" hidden>
-</aside>
-
-<main>
-    <div id="dashboard" class="view active"><h1>Dashboard</h1><div id="statusInfo"></div></div>
-    <div id="veiculos" class="view"><h1>Estoque</h1><div id="listaEstoque"></div></div>
-    <div id="kanban" class="view"><h1>Kanban</h1><div class="kanban-board" id="board"></div></div>
-</main>
-
-<script>
-    let db = JSON.parse(localStorage.getItem('mer_db') || '[]');
-
-    function save() { 
-        try {
-            localStorage.setItem('mer_db', JSON.stringify(db));
-            console.log('Dados salvos com sucesso!');
-        } catch(e) {
-            alert('Erro ao salvar dados: ' + e);
-        }
-    }
-
-    function switchView(id) {
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        if(id === 'kanban') renderKanban();
-        if(id === 'veiculos') renderEstoque();
-    }
-
-    function renderEstoque() {
-        const div = document.getElementById('listaEstoque');
-        div.innerHTML = db.map(v => `<div class="card">${v.apelido} - ${v.placa}</div>`).join('');
-    }
-
-    function renderKanban() {
-        const board = document.getElementById('board');
-        board.innerHTML = '';
-        ['entrada', 'vistoria', 'andamento', 'concluido'].forEach(fase => {
-            const col = document.createElement('div'); col.className = 'column';
-            col.innerHTML = `<h3>${fase.toUpperCase()}</h3>`;
-            col.ondragover = e => e.preventDefault();
-            col.ondrop = e => {
-                const id = e.dataTransfer.getData("text");
-                const v = db.find(x => x.id == id);
-                if(v) { v.fase = fase; save(); renderKanban(); }
-            };
-            db.filter(v => (v.fase || 'entrada') === fase).forEach(v => {
-                const card = document.createElement('div');
-                card.className = 'card'; card.draggable = true; card.innerText = v.apelido;
-                card.ondragstart = e => e.dataTransfer.setData("text", v.id);
-                col.appendChild(card);
-            });
-            board.appendChild(col);
-        });
-    }
-
-    // Importação unificada
-    document.getElementById('btnImportar').onclick = () => document.getElementById('inputImportar').click();
-    document.getElementById('inputImportar').onchange = (e) => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-            if(file.name.endsWith('.xml')) {
-                const xml = new DOMParser().parseFromString(evt.target.result, "text/xml");
-                const itens = xml.getElementsByTagName("veiculo");
-                for(let i=0; i<itens.length; i++) {
-                    db.push({
-                        id: Date.now()+i,
-                        apelido: itens[i].getElementsByTagName("modelo")[0]?.textContent || "Veículo",
-                        placa: itens[i].getElementsByTagName("placa")[0]?.textContent || "",
-                        fase: 'entrada'
-                    });
-                }
-            } else {
-                db = JSON.parse(evt.target.result);
+    <script>
+        // Esta função se conectará ao seu servidor Node.js/SQL
+        async function syncSQL() {
+            try {
+                const response = await fetch('http://localhost:3000/veiculos');
+                const data = await response.json();
+                console.log("Dados puxados do SQL:", data);
+            } catch (err) {
+                alert("Servidor SQL offline. Verifique o Node.js");
             }
-            save();
-            location.reload();
-        };
-        reader.readAsText(file);
-    };
-
-    document.getElementById('btnExportar').onclick = () => {
-        const a = document.createElement('a');
-        a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-        a.download = 'backup.json'; a.click();
-    };
-</script>
+        }
+        document.getElementById('btnSync').onclick = syncSQL;
+    </script>
 </body>
 </html>
