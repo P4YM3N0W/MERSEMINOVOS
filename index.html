@@ -1,50 +1,35 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JM Autocar | Estoque Exclusivo</title>
+    <title>MeR Seminovos | CRM Pro</title>
     <link rel="stylesheet" href="style.css">
-    <script src="script.js" defer></script>
 </head>
 <body>
 
-    <header class="main-header">
-        <div class="header-container">
-            <span class="logo">JM <span class="accent">AUTOCAR</span></span>
-            <p class="subtitle">Consultoria Solo • Atendimento Personalizado</p>
+<aside>
+    <img src="LOGOTIPO.png" onerror="this.style.display='none'">
+    <div class="nav" onclick="view('cadastro')">➕ Novo Cadastro</div>
+    <div class="nav" onclick="view('estoque')">📦 Estoque</div>
+</aside>
+
+<main>
+    <div id="cadastro" class="view">
+        <h1>Novo Veículo</h1>
+        <div class="form-container">
+            <input type="text" id="mModelo" placeholder="Modelo">
+            <input type="text" id="mPlaca" placeholder="Placa">
+            <select id="mIpva"><option value="Pago">IPVA Pago</option><option value="Atrasado">IPVA Atrasado</option></select>
+            <input type="number" id="mValor" placeholder="Valor Pendência (R$)">
+            <button onclick="salvar()">Gravar Veículo</button>
         </div>
-    </header>
+    </div>
+    <div id="estoque" class="view" style="display:none;">
+        <h1>Estoque</h1>
+        <div class="grid" id="lista"></div>
+    </div>
+</main>
 
-    <main class="showroom">
-        <!-- Grid de Veículos Otimizado -->
-        <section class="vehicles-grid" id="showroom-grid">
-            
-            <!-- Card de Exemplo: Fiat Strada Volcano -->
-            <article class="car-card" data-id="strada-2024">
-                <div class="image-wrapper">
-                    <img src="https://picsum.photos/600/400" 
-                         alt="Fiat Strada Volcano" 
-                         class="car-img" 
-                         loading="lazy" 
-                         width="600" 
-                         height="400">
-                </div>
-                <div class="car-info">
-                    <h2 class="car-title">Fiat Strada Volcano 1.3</h2>
-                    <p class="car-details">Ano 2024 • Completa • Cabine Dupla</p>
-                    <div class="price-row">
-                        <span class="price">R$ 112.900</span>
-                    </div>
-                    <!-- Atributo data-* para o JS capturar o clique de forma otimizada -->
-                    <button class="cta-button" data-action="negociar" data-vehicle="Fiat Strada Volcano">
-                        Chamar no WhatsApp
-                    </button>
-                </div>
-            </article>
-
-        </section>
-    </main>
-
+<script src="script.js"></script>
 </body>
 </html>
