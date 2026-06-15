@@ -1,0 +1,16 @@
+/* Estilo Sugerido para seu Painel */
+:root {
+    --bg: #050505;
+    --glass: rgba(255, 255, 255, 0.03);
+    --border: rgba(255, 255, 255, 0.1);
+    --accent: #ffb300;
+}
+body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; }
+.card { 
+    background: var(--glass); 
+    backdrop-filter: blur(10px); 
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    transition: 0.4s;
+}
+.card:hover { border-color: var(--accent); box-shadow: 0 0 20px rgba(255, 179, 0, 0.2); }
