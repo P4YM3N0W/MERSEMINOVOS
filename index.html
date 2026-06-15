@@ -2,13 +2,13 @@
 <html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
-    <title>MeR Seminovos | CRM Pro</title>
+    <title>MeR Seminovos | CRM</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <aside>
-    <img src="LOGOTIPO.png" onerror="this.style.display='none'">
+    <div class="logo">MeR Seminovos 🏎️</div>
     <div class="nav" onclick="view('cadastro')">➕ Novo Cadastro</div>
     <div class="nav" onclick="view('estoque')">📦 Estoque</div>
 </aside>
@@ -19,6 +19,8 @@
         <div class="form-container">
             <input type="text" id="mModelo" placeholder="Modelo">
             <input type="text" id="mPlaca" placeholder="Placa">
+            <input type="text" id="mChassi" placeholder="Chassi">
+            <input type="text" id="mRenavam" placeholder="Renavam">
             <select id="mIpva"><option value="Pago">IPVA Pago</option><option value="Atrasado">IPVA Atrasado</option></select>
             <input type="number" id="mValor" placeholder="Valor Pendência (R$)">
             <button onclick="salvar()">Gravar Veículo</button>
