@@ -1,37 +1,39 @@
 let db = JSON.parse(localStorage.getItem('mer_db') || '[]');
 
-function view(id) {
-    document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
-    document.getElementById(id).style.display = 'block';
-    if(id === 'estoque') render();
+function show(view) {
+    const app = document.getElementById('app');
+    if(view === 'cadastro') {
+        app.innerHTML = `
+            <div class="card">
+                <h2>Dados do Veículo</h2>
+                <input type="text" id="modelo" placeholder="Modelo">
+                <input type="text" id="placa" placeholder="Placa">
+                <button class="btn-main" onclick="salvar()">Salvar Veículo</button>
+            </div>
+        `;
+    } else {
+        renderEstoque();
+    }
 }
 
 function salvar() {
-    const v = {
-        id: Date.now(),
-        modelo: document.getElementById('modelo').value,
-        placa: document.getElementById('placa').value
-    };
+    const v = { id: Date.now(), modelo: document.getElementById('modelo').value, placa: document.getElementById('placa').value };
     db.push(v);
     localStorage.setItem('mer_db', JSON.stringify(db));
-    alert('Veículo salvo!');
-    location.reload();
+    alert('Veículo registrado!');
+    show('estoque');
 }
 
-function render() {
-    document.getElementById('lista').innerHTML = db.map(v => `
-        <div class="card">
-            <h3>${v.modelo}</h3>
-            <p>Placa: ${v.placa}</p>
-        </div>
-    `).join('');
+function renderEstoque() {
+    const app = document.getElementById('app');
+    app.innerHTML = `<div class="grid">${db.map(v => `<div class="card"><h3>${v.modelo}</h3><p>Placa: ${v.placa}</p></div>`).join('')}</div>`;
 }
 
-function backup() {
+function exportar() {
     const data = JSON.stringify(db);
     const blob = new Blob([data], {type: 'application/json'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'backup_crm.json';
+    a.download = 'estoque.json';
     a.click();
 }
