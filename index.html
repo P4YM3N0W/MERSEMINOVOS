@@ -11,16 +11,19 @@
         <nav>
             <button class="nav-btn" onclick="view('cadastro')">➕ Novo Cadastro</button>
             <button class="nav-btn" onclick="view('estoque')">📦 Estoque</button>
+            <button class="nav-btn" onclick="exportarBackup()">💾 Backup/Exportar</button>
+            <button class="nav-btn" onclick="document.getElementById('fileInput').click()">📥 Importar</button>
+            <input type="file" id="fileInput" hidden onchange="importar(event)">
         </nav>
     </header>
 
     <main>
         <div id="cadastro" class="view">
             <div class="card">
-                <h2>Gerenciamento de Veículo</h2>
+                <h2>Veículo</h2>
                 <input type="hidden" id="editIndex" value="-1">
                 <input type="text" id="mModelo" placeholder="Modelo">
-                <input type="text" id="mPlaca" placeholder="Placa">
+                <input type="text" id="mPlaca" placeholder="Placa (Chave)">
                 <input type="text" id="mChassi" placeholder="Chassi">
                 <input type="text" id="mRenavam" placeholder="Renavam">
                 <input type="text" id="mTelAtual" placeholder="Tel. Dono Atual">
