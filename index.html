@@ -1,37 +1,37 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>MeR Seminovos | CRM</title>
+    <title>MeR Seminovos | CRM Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<aside>
-    <div class="logo">MeR Seminovos 🏎️</div>
-    <div class="nav" onclick="view('cadastro')">➕ Novo Cadastro</div>
-    <div class="nav" onclick="view('estoque')">📦 Estoque</div>
-</aside>
-
-<main>
-    <div id="cadastro" class="view">
-        <h1>Novo Veículo</h1>
-        <div class="form-container">
-            <input type="text" id="mModelo" placeholder="Modelo">
-            <input type="text" id="mPlaca" placeholder="Placa">
-            <input type="text" id="mChassi" placeholder="Chassi">
-            <input type="text" id="mRenavam" placeholder="Renavam">
-            <select id="mIpva"><option value="Pago">IPVA Pago</option><option value="Atrasado">IPVA Atrasado</option></select>
-            <input type="number" id="mValor" placeholder="Valor Pendência (R$)">
-            <button onclick="salvar()">Gravar Veículo</button>
+    <aside>
+        <div class="logo">MeR Seminovos 🏎️</div>
+        <div class="nav" onclick="view('cadastro')">➕ Novo Veículo</div>
+        <div class="nav" onclick="view('estoque')">📦 Estoque</div>
+    </aside>
+    <main>
+        <div id="cadastro" class="view">
+            <h1>Cadastro de Veículo</h1>
+            <div class="form-container">
+                <input type="hidden" id="editIndex" value="-1">
+                <input type="text" id="mModelo" placeholder="Modelo">
+                <input type="text" id="mPlaca" placeholder="Placa">
+                <input type="text" id="mChassi" placeholder="Chassi">
+                <input type="text" id="mRenavam" placeholder="Renavam">
+                <input type="text" id="mTelAtual" placeholder="Tel. Dono Atual">
+                <input type="text" id="mTelAnterior" placeholder="Tel. Ex-Dono">
+                <select id="mIpva"><option value="Pago">IPVA Pago</option><option value="Atrasado">IPVA Atrasado</option></select>
+                <input type="number" id="mValor" placeholder="Valor Pendência (R$)">
+                <button class="btn" onclick="salvar()">Gravar Veículo</button>
+            </div>
         </div>
-    </div>
-    <div id="estoque" class="view" style="display:none;">
-        <h1>Estoque</h1>
-        <div class="grid" id="lista"></div>
-    </div>
-</main>
-
-<script src="script.js"></script>
+        <div id="estoque" class="view" style="display:none;">
+            <h1>Estoque</h1>
+            <div class="grid" id="lista"></div>
+        </div>
+    </main>
+    <script src="script.js"></script>
 </body>
 </html>
