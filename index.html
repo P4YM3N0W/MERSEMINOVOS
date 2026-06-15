@@ -1,48 +1,42 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>MeR Seminovos | CRM</title>
     <style>
-        :root { --bg: #050505; --card: #111; --accent: #fbbf24; --text: #eee; --err: #f87171; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; }
-        aside { width: 260px; background: #000; border-right: 1px solid #222; padding: 20px; }
-        main { flex: 1; padding: 40px; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        input, select { width: 100%; padding: 12px; margin: 5px 0; background: #111; border: 1px solid #333; color: white; border-radius: 6px; }
-        .card { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #333; }
-        .alerta { border-left: 5px solid var(--err); }
-        .btn { padding: 12px 20px; background: var(--accent); color: #000; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; }
+        :root { --bg: #050505; --card: #111; --ac: #fbbf24; --txt: #eee; --brd: #333; --err: #f87171; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--txt); margin: 0; display: flex; }
+        aside { width: 260px; background: #000; border-right: 1px solid var(--brd); padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        main { flex: 1; padding: 40px; overflow: auto; }
+        .card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--brd); margin-bottom: 15px; }
+        .btn { padding: 12px; cursor: pointer; background: #222; color: #fff; border: 1px solid var(--brd); border-radius: 6px; }
+        .btn:hover { background: var(--ac); color: #000; }
+        .btn-del { color: var(--err); border-color: var(--err); margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <aside>
     <img src="LOGOTIPO.png" style="width:100%" onerror="this.style.display='none'">
-    <button class="btn" onclick="show('cadastro')">➕ Cadastro</button>
-    <button class="btn" onclick="show('estoque')">📦 Estoque</button>
+    <button class="btn" onclick="switchView('view-cadastro')">➕ Novo Cadastro</button>
+    <button class="btn" onclick="switchView('view-estoque')">📦 Estoque</button>
 </aside>
 
 <main>
-    <div id="cadastro" class="view">
-        <h1>Novo Veículo</h1>
+    <div id="view-cadastro" class="view">
         <div class="card">
-            <div class="form-grid">
-                <input type="text" id="mModelo" placeholder="Modelo">
-                <input type="text" id="mPlaca" placeholder="Placa">
-                <input type="text" id="mChassi" placeholder="Chassi">
-                <input type="text" id="mRenavam" placeholder="Renavam">
-                <select id="mIpva"><option value="Pago">IPVA Pago</option><option value="Atrasado">IPVA Atrasado</option></select>
-                <input type="number" id="mValorIpva" placeholder="Valor IPVA R$">
-                <select id="mMulta"><option value="Sem">Sem Multas</option><option value="Pendente">Multa Pendente</option></select>
-                <input type="number" id="mValorMulta" placeholder="Valor Multa R$">
-            </div>
-            <button class="btn" onclick="salvar()">Salvar Veículo</button>
+            <h2>Cadastro / Edição</h2>
+            <input type="text" id="mModelo" placeholder="Modelo">
+            <input type="text" id="mPlaca" placeholder="Placa">
+            <select id="mIpvaStatus"><option value="Pago">IPVA Pago</option><option value="Atrasado">IPVA Atrasado</option></select>
+            <input type="number" id="mValorIpva" placeholder="Valor IPVA R$">
+            <select id="mMultaStatus"><option value="Sem">Sem Multas</option><option value="Pendente">Multa Pendente</option></select>
+            <input type="number" id="mValorMulta" placeholder="Valor Multa R$">
+            <button class="btn" onclick="salvarVeiculo()">Salvar Veículo</button>
         </div>
     </div>
-
-    <div id="estoque" class="view" style="display:none">
-        <h1>Veículos em Estoque</h1>
+    <div id="view-estoque" class="view" style="display:none">
+        <h2>Estoque Atual</h2>
         <div id="lista"></div>
     </div>
 </main>
@@ -50,34 +44,32 @@
 <script>
     let db = JSON.parse(localStorage.getItem('mer_db') || '[]');
 
-    function show(id) {
+    function switchView(id) {
         document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
         document.getElementById(id).style.display = 'block';
-        if(id === 'estoque') render();
+        if(id === 'view-estoque') render();
     }
 
-    function salvar() {
+    function salvarVeiculo() {
         const v = {
             id: Date.now(),
             modelo: document.getElementById('mModelo').value,
-            placa: document.getElementById('mPlaca').value,
-            chassi: document.getElementById('mChassi').value,
-            renavam: document.getElementById('mRenavam').value,
-            ipva: { status: document.getElementById('mIpva').value, valor: document.getElementById('mValorIpva').value },
-            multa: { status: document.getElementById('mMulta').value, valor: document.getElementById('mValorMulta').value }
+            placa: document.getElementById('mPlaca').value.toUpperCase(),
+            ipva: { status: document.getElementById('mIpvaStatus').value, valor: document.getElementById('mValorIpva').value },
+            multa: { status: document.getElementById('mMultaStatus').value, valor: document.getElementById('mValorMulta').value }
         };
         db.push(v);
         localStorage.setItem('mer_db', JSON.stringify(db));
-        render();
+        alert('Veículo salvo!');
+        location.reload();
     }
 
     function render() {
         document.getElementById('lista').innerHTML = db.map((v, i) => `
-            <div class="card ${(v.ipva.status === 'Atrasado' || v.multa.status === 'Pendente') ? 'alerta' : ''}">
+            <div class="card">
                 <strong>${v.modelo}</strong> (${v.placa})<br>
-                Chassi: ${v.chassi} | Renavam: ${v.renavam}<br>
                 IPVA: ${v.ipva.status} (R$${v.ipva.valor}) | Multa: ${v.multa.status} (R$${v.multa.valor})
-                <br><button onclick="excluir(${i})">Excluir 🗑️</button>
+                <br><button class="btn btn-del" onclick="excluir(${i})">Excluir 🗑️</button>
             </div>
         `).join('');
     }
