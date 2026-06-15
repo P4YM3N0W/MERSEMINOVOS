@@ -1,16 +1,11 @@
-:root { --bg:#050505; --surface:#111; --ac:#fbbf24; --txt:#eee; --brd:#333; }
+:root { --bg:#050505; --card:#111; --ac:#fbbf24; --txt:#eee; --brd:#333; --err:#ef4444; }
 body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--txt); margin: 0; }
-
-header { background: #000; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--brd); }
-.logo { font-weight: 800; color: var(--ac); font-size: 1.2rem; }
-main { max-width: 900px; margin: 40px auto; padding: 0 20px; }
-
-/* Botões Padronizados */
-.btn-main, .nav-btn { padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; border: 1px solid var(--brd); transition: 0.2s; }
-.btn-main { background: var(--ac); color: #000; border: none; width: 100%; }
-.nav-btn { background: #222; color: #fff; }
-.nav-btn:hover { background: var(--ac); color: #000; }
-
-.card { background: var(--surface); padding: 20px; border-radius: 12px; border: 1px solid var(--brd); margin-bottom: 15px; }
+header { background: #000; padding: 20px 40px; display: flex; justify-content: space-between; border-bottom: 1px solid var(--brd); }
+main { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+.card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--brd); margin-bottom: 15px; }
+.alerta { border-left: 5px solid var(--err); }
+.btn-main { width: 100%; padding: 12px; background: var(--ac); color: #000; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+.nav-btn { padding: 10px 15px; background: #222; color: #fff; border: 1px solid var(--brd); border-radius: 6px; cursor: pointer; }
 input, select { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid var(--brd); color: white; border-radius: 8px; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.btn-wa { display: inline-block; padding: 6px 10px; background: #25d366; color: white; border-radius: 4px; text-decoration: none; font-size: 11px; margin: 5px 5px 0 0; }
