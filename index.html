@@ -2,52 +2,60 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>MeR Seminovos | CRM Profissional</title>
+  <title>MeR Seminovos | CRM Pro</title>
   <style>
     :root { --bg:#050505; --card:#111; --ac:#ffb300; --txt:#eee; --brd:#333; --err:#ef4444; }
     body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--txt); display: flex; height: 100vh; margin: 0; }
-    
-    /* Layout */
     aside { width: 260px; background: #000; border-right: 1px solid var(--brd); padding: 20px; display: flex; flex-direction: column; gap: 10px; }
     main { flex: 1; padding: 40px; overflow: auto; }
-    
-    /* Logo */
-    .logo-container { margin-bottom: 30px; text-align: center; }
-    .logo-container img { width: 150px; height: auto; border-radius: 8px; }
-
-    /* UI Components */
-    .view { display: none; }
-    .view.active { display: block; }
-    .card { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--brd); }
+    .card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--brd); margin-bottom: 20px; }
     .btn { padding: 12px; cursor: pointer; background: #222; color: #fff; border: 1px solid var(--brd); border-radius: 6px; font-weight: bold; }
     .btn:hover { background: var(--ac); color: #000; }
-    
-    input { width: 100%; padding: 10px; margin: 5px 0 15px; background: #222; border: 1px solid var(--brd); color: white; border-radius: 4px; }
+    .form-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+    input, select { width: 100%; padding: 10px; background: #222; border: 1px solid var(--brd); color: white; border-radius: 4px; margin-top: 5px; }
+    .alerta { border: 2px solid var(--err) !important; }
   </style>
 </head>
 <body>
 
 <aside>
-    <div class="logo-container">
-        <img src="LOGOTIPO.png" alt="Logo MeR Seminovos">
-    </div>
-    <button class="btn" onclick="switchView('view-cadastro')">+ Cadastro</button>
-    <button class="btn" onclick="switchView('view-estoque')">Estoque</button>
-    <hr style="border:0; border-top:1px solid #333; margin: 10px 0;">
-    <button class="btn" id="btnImportar">Importar XML/JSON</button>
-    <button class="btn" id="btnExportar">Exportar Backup</button>
-    <input type="file" id="inputImportar" hidden accept=".xml,.json">
+    <img src="LOGOTIPO.png" style="width:100%" onerror="this.style.display='none'">
+    <button class="btn" onclick="switchView('view-cadastro')">+ Cadastro Completo</button>
+    <button class="btn" onclick="switchView('view-estoque')">Estoque / Kanban</button>
+    <hr style="width:100%; border:0; border-top:1px solid #333; margin: 10px 0;">
+    <button class="btn" id="btnExportar">Exportar Backup (.json)</button>
 </aside>
 
 <main>
     <div id="view-cadastro" class="view active">
-        <h1>Cadastrar Veículo</h1>
+        <h1>Cadastro de Veículo</h1>
         <div class="card">
-            <input type="text" id="cModelo" placeholder="Modelo">
-            <input type="text" id="cPlaca" placeholder="Placa (Ex: ABC-1234)">
-            <button class="btn" onclick="salvarVeiculo()">Salvar Veículo</button>
+            <h3>Dados do Veículo</h3>
+            <div class="form-group">
+                <input type="text" id="cModelo" placeholder="Modelo">
+                <input type="text" id="cPlaca" placeholder="Placa">
+                <input type="text" id="cChassi" placeholder="Chassi">
+                <input type="text" id="cRenavam" placeholder="Renavam">
+            </div>
+
+            <h3>Gestão Financeira (IPVA/Multas)</h3>
+            <div class="form-group">
+                <div>
+                    <label>IPVA</label>
+                    <select id="cIpvaStatus"><option value="Em dia">Em dia</option><option value="Atrasado">Atrasado</option></select>
+                    <select id="cIpvaParcela"><option value="1/3">1/3</option><option value="2/3">2/3</option><option value="3/3">3/3</option></select>
+                    <input type="number" id="cIpvaValor" placeholder="Valor R$">
+                </div>
+                <div>
+                    <label>Multas/Atuações</label>
+                    <select id="cMultaStatus"><option value="Nenhuma">Nenhuma</option><option value="Pendente">Pendente</option></select>
+                    <input type="number" id="cMultaValor" placeholder="Valor Total R$">
+                </div>
+            </div>
+            <button class="btn" onclick="salvarVeiculo()">Gravar Cadastro</button>
         </div>
     </div>
+
     <div id="view-estoque" class="view" style="display:none;">
         <h1>Estoques</h1>
         <div id="listaEstoque"></div>
@@ -63,59 +71,40 @@
         if(id === 'view-estoque') renderEstoque();
     }
 
-    function salvarVeiculo(dados) {
-        // Anti-Duplicidade: Procura placa
-        const placa = (dados.placa || document.getElementById('cPlaca').value).toUpperCase().trim();
-        const index = db.findIndex(v => v.placa.toUpperCase() === placa);
-        
-        const novo = {
-            id: index > -1 ? db[index].id : Date.now(),
-            modelo: dados.modelo || document.getElementById('cModelo').value,
-            placa: placa
+    function salvarVeiculo() {
+        const v = {
+            id: Date.now(),
+            modelo: document.getElementById('cModelo').value,
+            placa: document.getElementById('cPlaca').value,
+            chassi: document.getElementById('cChassi').value,
+            renavam: document.getElementById('cRenavam').value,
+            ipva: { status: document.getElementById('cIpvaStatus').value, parcela: document.getElementById('cIpvaParcela').value, valor: document.getElementById('cIpvaValor').value },
+            multa: { status: document.getElementById('cMultaStatus').value, valor: document.getElementById('cMultaValor').value }
         };
-
-        if(index > -1) db[index] = novo; // Unifica
-        else db.push(novo); // Cria novo
-        
+        db.push(v);
         localStorage.setItem('mer_db', JSON.stringify(db));
-        if(!dados.placa) { alert('Veículo salvo!'); location.reload(); }
+        alert('Cadastro efetuado com sucesso!');
+        location.reload();
     }
 
     function renderEstoque() {
-        document.getElementById('listaEstoque').innerHTML = db.map(v => 
-            `<div class="card"><strong>${v.modelo}</strong> | Placa: ${v.placa}</div>`
-        ).join('');
+        const div = document.getElementById('listaEstoque');
+        div.innerHTML = db.map(v => {
+            const temPendencia = v.ipva.status === 'Atrasado' || v.multa.status === 'Pendente';
+            return `
+                <div class="card ${temPendencia ? 'alerta' : ''}">
+                    <strong>${v.modelo}</strong> (${v.placa})<br>
+                    <small>IPVA: ${v.ipva.status} (${v.ipva.parcela}) - R$ ${v.ipva.valor}</small><br>
+                    <small>Multa: ${v.multa.status} - R$ ${v.multa.valor}</small>
+                </div>
+            `;
+        }).join('');
     }
 
-    // Exportação
     document.getElementById('btnExportar').onclick = () => {
         const a = document.createElement('a');
         a.href = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(db));
-        a.download = 'backup_crm.json'; a.click();
-    };
-
-    // Importação
-    document.getElementById('btnImportar').onclick = () => document.getElementById('inputImportar').click();
-    document.getElementById('inputImportar').onchange = (e) => {
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-            const file = e.target.files[0];
-            if(file.name.endsWith('.xml')) {
-                const xml = new DOMParser().parseFromString(evt.target.result, "text/xml");
-                const itens = xml.getElementsByTagName("veiculo");
-                for(let v of itens) {
-                    salvarVeiculo({
-                        modelo: v.getElementsByTagName("modelo")[0]?.textContent,
-                        placa: v.getElementsByTagName("placa")[0]?.textContent
-                    });
-                }
-            } else {
-                db = JSON.parse(evt.target.result);
-                localStorage.setItem('mer_db', JSON.stringify(db));
-            }
-            location.reload();
-        };
-        reader.readAsText(file);
+        a.download = 'backup_mer.json'; a.click();
     };
 </script>
 </body>
