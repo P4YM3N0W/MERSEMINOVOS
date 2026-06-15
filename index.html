@@ -2,110 +2,99 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>MeR Seminovos | CRM Pro</title>
+  <title>MeR Seminovos | Enterprise CRM</title>
   <style>
     :root { --bg:#050505; --card:#111; --ac:#ffb300; --txt:#eee; --brd:#333; --err:#ef4444; }
-    body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--txt); display: flex; height: 100vh; margin: 0; }
-    aside { width: 260px; background: #000; border-right: 1px solid var(--brd); padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--txt); display: flex; height: 100vh; margin: 0; }
+    aside { width: 250px; background: #000; border-right: 1px solid var(--brd); padding: 20px; }
     main { flex: 1; padding: 40px; overflow: auto; }
-    .card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--brd); margin-bottom: 20px; }
-    .btn { padding: 12px; cursor: pointer; background: #222; color: #fff; border: 1px solid var(--brd); border-radius: 6px; font-weight: bold; }
-    .btn:hover { background: var(--ac); color: #000; }
-    .form-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-    input, select { width: 100%; padding: 10px; background: #222; border: 1px solid var(--brd); color: white; border-radius: 4px; margin-top: 5px; }
-    .alerta { border: 2px solid var(--err) !important; }
+    .kanban-container { display: flex; gap: 20px; }
+    .column { flex: 1; background: #0a0a0a; border: 1px solid var(--brd); border-radius: 8px; padding: 15px; }
+    .card { background: var(--card); padding: 15px; margin-bottom: 10px; border-radius: 6px; border-left: 4px solid var(--ac); cursor: pointer; transition: 0.2s; }
+    .card:hover { transform: scale(1.02); }
+    .alerta { border-left-color: var(--err); }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; }
+    .modal-content { background: #1a1a1a; padding: 30px; border-radius: 12px; width: 400px; border: 1px solid var(--brd); }
+    input, select { display: block; width: 100%; margin: 10px 0; padding: 10px; background: #222; color: #fff; border: 1px solid var(--brd); }
+    .btn-wa { display: block; background: #25d366; color: #fff; padding: 10px; text-align: center; text-decoration: none; margin-top: 10px; border-radius: 5px; }
   </style>
 </head>
 <body>
 
 <aside>
     <img src="LOGOTIPO.png" style="width:100%" onerror="this.style.display='none'">
-    <button class="btn" onclick="switchView('view-cadastro')">+ Cadastro Completo</button>
-    <button class="btn" onclick="switchView('view-estoque')">Estoque / Kanban</button>
-    <hr style="width:100%; border:0; border-top:1px solid #333; margin: 10px 0;">
-    <button class="btn" id="btnExportar">Exportar Backup (.json)</button>
+    <button onclick="openModal()">+ Adicionar Veículo</button>
+    <button onclick="exportarBackup()">Backup JSON</button>
 </aside>
 
 <main>
-    <div id="view-cadastro" class="view active">
-        <h1>Cadastro de Veículo</h1>
-        <div class="card">
-            <h3>Dados do Veículo</h3>
-            <div class="form-group">
-                <input type="text" id="cModelo" placeholder="Modelo">
-                <input type="text" id="cPlaca" placeholder="Placa">
-                <input type="text" id="cChassi" placeholder="Chassi">
-                <input type="text" id="cRenavam" placeholder="Renavam">
-            </div>
-
-            <h3>Gestão Financeira (IPVA/Multas)</h3>
-            <div class="form-group">
-                <div>
-                    <label>IPVA</label>
-                    <select id="cIpvaStatus"><option value="Em dia">Em dia</option><option value="Atrasado">Atrasado</option></select>
-                    <select id="cIpvaParcela"><option value="1/3">1/3</option><option value="2/3">2/3</option><option value="3/3">3/3</option></select>
-                    <input type="number" id="cIpvaValor" placeholder="Valor R$">
-                </div>
-                <div>
-                    <label>Multas/Atuações</label>
-                    <select id="cMultaStatus"><option value="Nenhuma">Nenhuma</option><option value="Pendente">Pendente</option></select>
-                    <input type="number" id="cMultaValor" placeholder="Valor Total R$">
-                </div>
-            </div>
-            <button class="btn" onclick="salvarVeiculo()">Gravar Cadastro</button>
-        </div>
-    </div>
-
-    <div id="view-estoque" class="view" style="display:none;">
-        <h1>Estoques</h1>
-        <div id="listaEstoque"></div>
-    </div>
+    <div class="kanban-container" id="board"></div>
 </main>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <h2 id="modalTitle">Veículo</h2>
+        <input type="hidden" id="editId">
+        <input type="text" id="mModelo" placeholder="Modelo">
+        <input type="text" id="mPlaca" placeholder="Placa">
+        <label><input type="checkbox" id="mPendencia"> Pendência (Multa/IPVA)</label>
+        <hr style="margin:15px 0">
+        <a id="waAtual" class="btn-wa" href="#" target="_blank">WhatsApp Cliente Atual</a>
+        <a id="waAnterior" class="btn-wa" href="#" target="_blank">WhatsApp Cliente Anterior</a>
+        <button onclick="salvarEdit()">Salvar Edição</button>
+        <button onclick="closeModal()">Fechar</button>
+    </div>
+</div>
 
 <script>
     let db = JSON.parse(localStorage.getItem('mer_db') || '[]');
 
-    function switchView(id) {
-        document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
-        document.getElementById(id).style.display = 'block';
-        if(id === 'view-estoque') renderEstoque();
+    function renderKanban() {
+        const board = document.getElementById('board');
+        board.innerHTML = '';
+        ['entrada', 'vistoria', 'documentacao', 'finalizado'].forEach(fase => {
+            const col = document.createElement('div'); col.className = 'column';
+            col.innerHTML = `<h3>${fase.toUpperCase()}</h3>`;
+            db.filter(v => (v.status || 'entrada') === fase).forEach(v => {
+                const card = document.createElement('div');
+                card.className = `card ${v.pendencia ? 'alerta' : ''}`;
+                card.innerHTML = `<strong>${v.modelo}</strong><br>${v.placa}`;
+                card.onclick = () => openModal(v);
+                col.appendChild(card);
+            });
+            board.appendChild(col);
+        });
     }
 
-    function salvarVeiculo() {
-        const v = {
-            id: Date.now(),
-            modelo: document.getElementById('cModelo').value,
-            placa: document.getElementById('cPlaca').value,
-            chassi: document.getElementById('cChassi').value,
-            renavam: document.getElementById('cRenavam').value,
-            ipva: { status: document.getElementById('cIpvaStatus').value, parcela: document.getElementById('cIpvaParcela').value, valor: document.getElementById('cIpvaValor').value },
-            multa: { status: document.getElementById('cMultaStatus').value, valor: document.getElementById('cMultaValor').value }
-        };
-        db.push(v);
+    function openModal(v) {
+        document.getElementById('modal').style.display = 'flex';
+        if(v) {
+            document.getElementById('editId').value = v.id;
+            document.getElementById('mModelo').value = v.modelo;
+            document.getElementById('mPlaca').value = v.placa;
+            document.getElementById('mPendencia').checked = v.pendencia;
+            document.getElementById('waAtual').href = `https://wa.me/55${v.telAtual}`;
+            document.getElementById('waAnterior').href = `https://wa.me/55${v.telAnterior}`;
+        }
+    }
+
+    function salvarEdit() {
+        const id = document.getElementById('editId').value;
+        const index = db.findIndex(v => v.id == id);
+        db[index].modelo = document.getElementById('mModelo').value;
+        db[index].pendencia = document.getElementById('mPendencia').checked;
         localStorage.setItem('mer_db', JSON.stringify(db));
-        alert('Cadastro efetuado com sucesso!');
-        location.reload();
+        closeModal(); renderKanban();
     }
 
-    function renderEstoque() {
-        const div = document.getElementById('listaEstoque');
-        div.innerHTML = db.map(v => {
-            const temPendencia = v.ipva.status === 'Atrasado' || v.multa.status === 'Pendente';
-            return `
-                <div class="card ${temPendencia ? 'alerta' : ''}">
-                    <strong>${v.modelo}</strong> (${v.placa})<br>
-                    <small>IPVA: ${v.ipva.status} (${v.ipva.parcela}) - R$ ${v.ipva.valor}</small><br>
-                    <small>Multa: ${v.multa.status} - R$ ${v.multa.valor}</small>
-                </div>
-            `;
-        }).join('');
-    }
-
-    document.getElementById('btnExportar').onclick = () => {
+    function closeModal() { document.getElementById('modal').style.display = 'none'; }
+    function exportarBackup() {
         const a = document.createElement('a');
         a.href = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(db));
-        a.download = 'backup_mer.json'; a.click();
-    };
+        a.download = 'crm_backup.json'; a.click();
+    }
+
+    renderKanban();
 </script>
 </body>
 </html>
