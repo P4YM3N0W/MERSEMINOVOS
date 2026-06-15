@@ -2,64 +2,62 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>MeR Seminovos | CRM Pro</title>
+  <title>MeR Seminovos | CRM</title>
   <style>
-    :root { --bg:#000; --card:#0a0a0a; --ac:#fbbf24; --txt:#e5e5e5; --brd:#262626; --err:#f87171; }
+    * { box-sizing: border-box; }
+    :root { --bg:#050505; --card:#111; --ac:#fbbf24; --txt:#eee; --brd:#262626; --err:#f87171; }
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--txt); display: flex; height: 100vh; margin: 0; }
     
-    /* MENU MODERNO */
-    aside { width: 240px; background: #050505; border-right: 1px solid var(--brd); padding: 20px; display: flex; flex-direction: column; gap: 8px; }
-    .logo-box { padding-bottom: 20px; margin-bottom: 10px; }
-    .nav-item { padding: 12px; cursor: pointer; border-radius: 8px; transition: 0.3s; font-size: 14px; border: 1px solid transparent; }
-    .nav-item:hover { background: var(--brd); }
+    /* Layout Corrigido */
+    aside { width: 260px; background: #050505; border-right: 1px solid var(--brd); padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+    main { flex: 1; padding: 30px; overflow-y: auto; }
     
-    /* ELEMENTOS */
-    main { flex: 1; padding: 40px; overflow: auto; }
-    .card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--brd); margin-bottom: 20px; }
-    .select-modern { appearance: none; background: #111; color: var(--txt); padding: 12px; border-radius: 8px; border: 1px solid var(--brd); width: 100%; cursor: pointer; }
-    .btn { padding: 12px 20px; background: var(--ac); color: #000; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
-    .alerta { border-color: var(--err); }
-    #log-area { font-family: monospace; background: #000; color: #0f0; padding: 15px; border-radius: 8px; height: 150px; overflow: auto; font-size: 12px; }
+    /* Card Corrigido */
+    .card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--brd); margin-bottom: 15px; }
+    .alerta { border-color: var(--err); box-shadow: 0 0 10px rgba(248, 113, 113, 0.2); }
+    
+    /* Input/Select Modernizados */
+    input, select { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid var(--brd); color: white; border-radius: 8px; }
+    .btn { padding: 12px; background: var(--ac); color: #000; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; }
+    
+    /* Kanban Grid Corrigido */
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
   </style>
 </head>
 <body>
 
 <aside>
-    <div class="logo-box"><img src="LOGOTIPO.png" style="width:100%" onerror="this.style.display='none'"></div>
-    <div class="nav-item" onclick="view('cadastro')">➕ Novo Cadastro</div>
-    <div class="nav-item" onclick="view('estoque')">📦 Estoque/Kanban</div>
-    <div class="nav-item" onclick="view('sistema')">⚠️ Relatório de Erros</div>
-    <hr style="border:0; border-top:1px solid #333; margin: 10px 0;">
-    <button class="btn" id="btnExportar">Exportar Backup</button>
+    <img src="LOGOTIPO.png" style="width:100%" onerror="this.style.display='none'">
+    <button class="btn" onclick="view('cadastro')">➕ Novo Veículo</button>
+    <button class="btn" onclick="view('estoque')">📦 Estoque</button>
+    <button class="btn" onclick="view('sistema')">⚠️ Relatórios/Logs</button>
 </aside>
 
 <main>
     <div id="cadastro" class="view">
         <div class="card">
-            <h1>Cadastro Completo</h1>
+            <h2>Cadastro de Veículo</h2>
             <input type="text" id="mModelo" placeholder="Modelo">
             <input type="text" id="mPlaca" placeholder="Placa">
-            <select id="mIpva" class="select-modern"><option value="Pago">IPVA Pago</option><option value="Atrasado">IPVA Atrasado</option></select>
-            <select id="mMulta" class="select-modern"><option value="Sem">Sem Multas</option><option value="Pendente">Multa Pendente</option></select>
+            <select id="mIpva"><option value="Pago">IPVA Pago</option><option value="Atrasado">IPVA Atrasado</option></select>
+            <select id="mMulta"><option value="Sem">Sem Multas</option><option value="Pendente">Multa Pendente</option></select>
             <input type="number" id="mValor" placeholder="Valor Pendência R$">
-            <button class="btn" onclick="salvar()">Cadastrar</button>
+            <button class="btn" onclick="salvar()">Gravar Cadastro</button>
         </div>
     </div>
+    
     <div id="estoque" class="view" style="display:none">
-        <h1>Estoque</h1>
-        <div id="lista" style="display:grid; gap:15px"></div>
+        <div class="grid" id="lista"></div>
     </div>
+    
     <div id="sistema" class="view" style="display:none">
-        <h1>Logs do Sistema</h1>
-        <div id="log-area"></div>
+        <div class="card"><h2>Logs de Erro</h2><div id="log-area" style="color:var(--err)"></div></div>
     </div>
 </main>
 
 <script>
     let db = JSON.parse(localStorage.getItem('mer_db') || '[]');
-    let logs = [];
-
-    function log(m) { logs.push(m); document.getElementById('log-area').innerHTML = logs.join('<br>'); }
+    function log(m) { document.getElementById('log-area').innerHTML += `<div>${m}</div>`; }
 
     function view(id) {
         document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
@@ -68,25 +66,24 @@
     }
 
     function salvar() {
-        try {
-            const v = {
-                id: Date.now(),
-                modelo: document.getElementById('mModelo').value,
-                placa: document.getElementById('mPlaca').value,
-                ipva: document.getElementById('mIpva').value,
-                multa: document.getElementById('mMulta').value
-            };
-            db.push(v);
-            localStorage.setItem('mer_db', JSON.stringify(db));
-            log('Veículo ' + v.placa + ' salvo com sucesso.');
-            alert('Salvo!');
-        } catch(e) { log('ERRO: ' + e.message); }
+        const v = {
+            id: Date.now(),
+            modelo: document.getElementById('mModelo').value,
+            placa: document.getElementById('mPlaca').value,
+            ipva: document.getElementById('mIpva').value,
+            multa: document.getElementById('mMulta').value
+        };
+        if(!v.placa) { log('Erro: Placa obrigatória.'); return; }
+        db.push(v);
+        localStorage.setItem('mer_db', JSON.stringify(db));
+        render();
     }
 
     function render() {
         document.getElementById('lista').innerHTML = db.map(v => `
             <div class="card ${(v.ipva === 'Atrasado' || v.multa === 'Pendente') ? 'alerta' : ''}">
-                <strong>${v.modelo}</strong> (${v.placa})<br>
+                <strong>${v.modelo}</strong><br>
+                Placa: ${v.placa}<br>
                 Status: ${v.ipva} | ${v.multa}
             </div>
         `).join('');
