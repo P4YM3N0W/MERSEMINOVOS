@@ -1,100 +1,84 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>MeR Seminovos | Enterprise CRM</title>
-  <style>
-    :root { --bg:#050505; --card:#111; --ac:#ffb300; --txt:#eee; --brd:#333; --err:#ef4444; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--txt); display: flex; height: 100vh; margin: 0; }
-    aside { width: 250px; background: #000; border-right: 1px solid var(--brd); padding: 20px; }
-    main { flex: 1; padding: 40px; overflow: auto; }
-    .kanban-container { display: flex; gap: 20px; }
-    .column { flex: 1; background: #0a0a0a; border: 1px solid var(--brd); border-radius: 8px; padding: 15px; }
-    .card { background: var(--card); padding: 15px; margin-bottom: 10px; border-radius: 6px; border-left: 4px solid var(--ac); cursor: pointer; transition: 0.2s; }
-    .card:hover { transform: scale(1.02); }
-    .alerta { border-left-color: var(--err); }
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; }
-    .modal-content { background: #1a1a1a; padding: 30px; border-radius: 12px; width: 400px; border: 1px solid var(--brd); }
-    input, select { display: block; width: 100%; margin: 10px 0; padding: 10px; background: #222; color: #fff; border: 1px solid var(--brd); }
-    .btn-wa { display: block; background: #25d366; color: #fff; padding: 10px; text-align: center; text-decoration: none; margin-top: 10px; border-radius: 5px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MeR Seminovos CRM</title>
+    <style>
+        /* RESET E VARIÁVEIS */
+        :root { --bg:#050505; --surface:#111; --accent:#ffb300; --text:#fff; --border:#333; }
+        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); display: flex; }
+        
+        /* SIDEBAR */
+        nav { width: 250px; background: #000; border-right: 1px solid var(--border); height: 100vh; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        nav img { width: 100%; margin-bottom: 20px; }
+        .nav-btn { background: #222; color: #fff; border: 1px solid var(--border); padding: 12px; border-radius: 6px; cursor: pointer; text-align: left; }
+        .nav-btn:hover { background: var(--accent); color: #000; }
+
+        /* PAINEL */
+        main { flex: 1; padding: 40px; overflow-y: auto; }
+        .card { background: var(--surface); padding: 20px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 20px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; background: #000; border: 1px solid var(--border); color: #fff; border-radius: 4px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+    </style>
 </head>
 <body>
 
-<aside>
-    <img src="LOGOTIPO.png" style="width:100%" onerror="this.style.display='none'">
-    <button onclick="openModal()">+ Adicionar Veículo</button>
-    <button onclick="exportarBackup()">Backup JSON</button>
-</aside>
+<nav>
+    <img src="LOGOTIPO.png" onerror="this.style.display='none'">
+    <button class="nav-btn" onclick="show('cadastro')">+ Cadastrar Veículo</button>
+    <button class="nav-btn" onclick="show('estoque')">Visualizar Estoque</button>
+    <button class="nav-btn" onclick="exportarBackup()">Backup JSON</button>
+</nav>
 
 <main>
-    <div class="kanban-container" id="board"></div>
+    <div id="cadastro" class="view">
+        <div class="card">
+            <h1>Cadastro de Veículo</h1>
+            <input type="text" id="mModelo" placeholder="Modelo">
+            <input type="text" id="mPlaca" placeholder="Placa">
+            <button class="nav-btn" onclick="salvar()">Salvar no Pátio</button>
+        </div>
+    </div>
+    <div id="estoque" class="view" style="display:none;">
+        <h1>Estoques</h1>
+        <div class="grid" id="lista"></div>
+    </div>
 </main>
 
-<div id="modal" class="modal">
-    <div class="modal-content">
-        <h2 id="modalTitle">Veículo</h2>
-        <input type="hidden" id="editId">
-        <input type="text" id="mModelo" placeholder="Modelo">
-        <input type="text" id="mPlaca" placeholder="Placa">
-        <label><input type="checkbox" id="mPendencia"> Pendência (Multa/IPVA)</label>
-        <hr style="margin:15px 0">
-        <a id="waAtual" class="btn-wa" href="#" target="_blank">WhatsApp Cliente Atual</a>
-        <a id="waAnterior" class="btn-wa" href="#" target="_blank">WhatsApp Cliente Anterior</a>
-        <button onclick="salvarEdit()">Salvar Edição</button>
-        <button onclick="closeModal()">Fechar</button>
-    </div>
-</div>
-
 <script>
-    let db = JSON.parse(localStorage.getItem('mer_db') || '[]');
+    let db = JSON.parse(localStorage.getItem('crm_data') || '[]');
 
-    function renderKanban() {
-        const board = document.getElementById('board');
-        board.innerHTML = '';
-        ['entrada', 'vistoria', 'documentacao', 'finalizado'].forEach(fase => {
-            const col = document.createElement('div'); col.className = 'column';
-            col.innerHTML = `<h3>${fase.toUpperCase()}</h3>`;
-            db.filter(v => (v.status || 'entrada') === fase).forEach(v => {
-                const card = document.createElement('div');
-                card.className = `card ${v.pendencia ? 'alerta' : ''}`;
-                card.innerHTML = `<strong>${v.modelo}</strong><br>${v.placa}`;
-                card.onclick = () => openModal(v);
-                col.appendChild(card);
-            });
-            board.appendChild(col);
-        });
+    function show(id) {
+        document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
+        document.getElementById(id).style.display = 'block';
+        if(id === 'estoque') render();
     }
 
-    function openModal(v) {
-        document.getElementById('modal').style.display = 'flex';
-        if(v) {
-            document.getElementById('editId').value = v.id;
-            document.getElementById('mModelo').value = v.modelo;
-            document.getElementById('mPlaca').value = v.placa;
-            document.getElementById('mPendencia').checked = v.pendencia;
-            document.getElementById('waAtual').href = `https://wa.me/55${v.telAtual}`;
-            document.getElementById('waAnterior').href = `https://wa.me/55${v.telAnterior}`;
-        }
+    function salvar() {
+        const v = {
+            id: Date.now(),
+            modelo: document.getElementById('mModelo').value,
+            placa: document.getElementById('mPlaca').value
+        };
+        db.push(v);
+        localStorage.setItem('crm_data', JSON.stringify(db));
+        alert('Cadastro realizado!');
+        location.reload();
     }
 
-    function salvarEdit() {
-        const id = document.getElementById('editId').value;
-        const index = db.findIndex(v => v.id == id);
-        db[index].modelo = document.getElementById('mModelo').value;
-        db[index].pendencia = document.getElementById('mPendencia').checked;
-        localStorage.setItem('mer_db', JSON.stringify(db));
-        closeModal(); renderKanban();
+    function render() {
+        document.getElementById('lista').innerHTML = db.map(v => 
+            `<div class="card"><strong>${v.modelo}</strong><br>Placa: ${v.placa}</div>`
+        ).join('');
     }
 
-    function closeModal() { document.getElementById('modal').style.display = 'none'; }
     function exportarBackup() {
         const a = document.createElement('a');
-        a.href = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(db));
-        a.download = 'crm_backup.json'; a.click();
+        a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+        a.download = "backup.json";
+        a.click();
     }
-
-    renderKanban();
 </script>
 </body>
 </html>
