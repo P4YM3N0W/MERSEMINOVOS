@@ -1,43 +1,34 @@
-// Garante que o código rode no escopo correto sem poluir a janela global
 (() => {
     "use strict";
 
-    // Aguarda o DOM estar pronto
     document.addEventListener("DOMContentLoaded", () => {
-        initApp();
-    });
+        const showroom = document.querySelector("#showroom-grid");
+        
+        if (!showroom) return;
 
-    function initApp() {
-        const gridProdutos = document.querySelector("#grid-produtos");
+        // Número de telefone da JM AUTOCAR (DDD + Número, apenas dígitos)
+        const TELEFONE_WHATSAPP = "5531999999999"; 
 
-        if (!gridProdutos) return;
-
-        /* 1. OTIMIZAÇÃO: Event Delegation (Delegação de Eventos)
-           Em vez de adicionar um EventListener para cada botão de cada card (o que destrói a memória),
-           adicionamos apenas UM escutador no container pai.
+        /* 
+           OTIMIZAÇÃO: Delegação de Eventos. 
+           Um único ponto de escuta para todos os botões de carros atuais e futuros.
         */
-        gridProdutos.addEventListener("click", (event) => {
-            const targetBtn = event.target.closest('[data-action="click-efeito"]');
+        showroom.addEventListener("click", (event) => {
+            const botao = event.target.closest('[data-action="negociar"]');
             
-            if (targetBtn) {
-                handleButtonClick(targetBtn);
+            if (botao) {
+                const modeloCarro = botao.getAttribute("data-vehicle");
+                abrirConversaWhatsApp(modeloCarro, TELEFONE_WHATSAPP);
             }
         });
-    }
+    });
 
-    function handleButtonClick(button) {
-        // 2. OTIMIZAÇÃO: Animações de interface via JS devem usar requestAnimationFrame
-        // Isso sincroniza a execução do JS com a taxa de atualização (Hz) do monitor do usuário.
-        requestAnimationFrame(() => {
-            button.style.transform = "scale(0.95)";
-            
-            setTimeout(() => {
-                requestAnimationFrame(() => {
-                    button.style.transform = "none";
-                    alert("Ação executada com clique otimizado!");
-                });
-            }, 100);
-        });
+    function abrirConversaWhatsApp(carro, telefone) {
+        // Mensagem personalizada automática para o lead chegar pronto
+        const mensagem = `Olá Jarod, tenho interesse no veículo: ${carro} que vi no catálogo.`;
+        const urlFormatada = `https://api.whatsapp.com/send?phone=${telefone}&text=${encodeURIComponent(mensagem)}`;
+        
+        // Abre em uma nova aba de forma segura e performática
+        window.open(urlFormatada, "_blank", "noopener,noreferrer");
     }
-
 })();
