@@ -1,4 +1,3 @@
-/* 1. Reset básico e variáveis CSS (Performance de renderização) */
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -6,77 +5,125 @@
 }
 
 :root {
-    --bg-color: #f4f7f6;
-    --card-bg: #ffffff;
-    --text-color: #333333;
-    --primary-color: #0076ff;
-    --transition-fast: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --bg-dark: #121214;
+    --card-bg: #202024;
+    --text-primary: #ffffff;
+    --text-secondary: #a8a8b3;
+    --accent-color: #00b37e; /* Verde de conversão/WhatsApp */
+    --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    line-height: 1.5;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    line-height: 1.6;
 }
 
-.container {
+.main-header {
+    background-color: var(--card-bg);
+    padding: 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid #29292e;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.logo .accent {
+    color: var(--accent-color);
+}
+
+.subtitle {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.showroom {
     max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
+    margin: 2rem auto;
+    padding: 0 1rem;
 }
 
-/* 2. Grid Otimizado (Sem necessidade de Media Queries repetitivas) */
-.grid {
+/* Grid Inteligente: Se adapta de 1 a 3 colunas sozinho sem pesar o render */
+.vehicles-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-    /* Performance pura: diz ao navegador para não renderizar o que está fora da tela */
-    content-visibility: auto;
-    contain-intrinsic-size: 0 400px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    content-visibility: auto; /* O navegador ignora o que está fora da tela para poupar bateria */
+    contain-intrinsic-size: 0 450px;
 }
 
-/* 3. Card com Aceleração de Hardware */
-.card {
-    background: var(--card-bg);
-    border-radius: 12px;
+.car-card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    /* Prepara o navegador para a animação, jogando o elemento para uma camada da GPU */
-    will-change: transform, box-shadow;
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    will-change: transform;
+    transition: transform var(--transition);
 }
 
-/* Evite animar propriedades como 'width', 'height', 'margin' ou 'top'. Use sempre transform */
-.card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+/* Efeito suave acelerado por hardware */
+@media (hover: hover) {
+    .car-card:hover {
+        transform: translateY(-6px);
+    }
 }
 
-.card__img {
+.image-wrapper {
+    position: relative;
+    padding-top: 66.66%; /* Mantém a proporção 3:2 padrão de fotos de carros */
+    background-color: #29292e;
+}
+
+.car-img {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: auto;
-    display: block;
+    height: 100%;
     object-fit: cover;
 }
 
-.card__content {
+.car-info {
     padding: 1.5rem;
 }
 
-.btn {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    background-color: var(--primary-color);
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    will-change: opacity;
-    transition: opacity var(--transition-fast);
+.car-title {
+    font-size: 1.3rem;
+    margin-bottom: 0.25rem;
 }
 
-.btn:hover {
-    opacity: 0.9;
+.car-details {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+}
+
+.price {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 1.2rem;
+}
+
+.cta-button {
+    display: block;
+    width: 100%;
+    padding: 0.8rem;
+    background-color: var(--accent-color);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: filter var(--transition);
+}
+
+.cta-button:active {
+    filter: brightness(0.8);
 }
