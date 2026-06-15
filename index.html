@@ -2,45 +2,42 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>MeR Seminovos | CRM</title>
+  <title>MeR Seminovos | CRM Pro</title>
   <style>
-    :root { --bg:#050505; --card:#111; --ac:#ffb300; --txt:#eee; --brd:#333; }
-    body { font-family: sans-serif; background: var(--bg); color: var(--txt); display: flex; height: 100vh; margin: 0; }
+    :root { --bg:#050505; --card:#111; --ac:#ffb300; --txt:#eee; --brd:#333; --error:#ef4444; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--txt); display: flex; height: 100vh; margin: 0; }
     aside { width: 260px; background: #000; border-right: 1px solid var(--brd); padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-    main { flex: 1; padding: 40px; overflow: auto; }
-    .card { background: var(--card); padding: 20px; border-radius: 8px; border: 1px solid var(--brd); margin-bottom: 20px; }
-    .btn { padding: 12px; cursor: pointer; background: #222; color: #fff; border: 1px solid var(--brd); border-radius: 6px; }
-    .btn:hover { background: var(--ac); color: #000; }
-    input { width: 100%; padding: 8px; margin: 5px 0 15px; background: #222; border: 1px solid var(--brd); color: white; border-radius: 4px; }
+    main { flex: 1; padding: 30px; overflow: auto; }
+    .card { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 15px; border: 2px solid #333; transition: 0.3s; }
+    /* A classe de alerta que você pediu */
+    .card.alerta { border-color: var(--error); box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
+    button { padding: 12px; cursor: pointer; background: #222; color: #fff; border: 1px solid var(--brd); border-radius: 6px; }
+    button:hover { background: var(--ac); color: #000; }
+    .tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: #333; }
   </style>
 </head>
 <body>
 
 <aside>
     <img src="LOGOTIPO.png" style="width:100%" onerror="this.style.display='none'">
-    <button class="btn" onclick="switchView('view-cadastro')">+ Cadastro de Veículo</button>
-    <button class="btn" onclick="switchView('view-estoque')">Ver Estoque</button>
-    <hr style="border:0; border-top:1px solid #333; margin: 10px 0;">
-    <button class="btn" id="btnImportar">Importar Dados (JSON)</button>
-    <button class="btn" id="btnExportar">Backup (JSON)</button>
-    <input type="file" id="inputImportar" hidden accept=".json">
+    <button onclick="switchView('view-cadastro')">+ Cadastrar Veículo</button>
+    <button onclick="switchView('view-estoque')">Visualizar Estoque</button>
 </aside>
 
 <main>
-    <div id="view-cadastro" class="view">
+    <div id="view-cadastro" class="view active">
+        <h1>Cadastro de Veículo</h1>
         <div class="card">
-            <h1>Cadastro de Veículo</h1>
-            <input type="text" id="cModelo" placeholder="Modelo do Veículo">
-            <input type="text" id="cPlaca" placeholder="Placa">
-            <input type="text" id="cRenavam" placeholder="Renavam">
-            <input type="text" id="cIpva" placeholder="IPVA (ex: Pago/Pendente)">
-            <input type="text" id="cMultas" placeholder="Multas">
-            <button class="btn" onclick="salvarVeiculo()">Cadastrar no Sistema</button>
+            <input type="text" id="cModelo" placeholder="Modelo"><br>
+            <input type="text" id="cPlaca" placeholder="Placa"><br>
+            <label><input type="checkbox" id="cIpva"> IPVA em Atraso</label><br>
+            <label><input type="checkbox" id="cMultas"> Possui Multas</label><br>
+            <button class="btn" onclick="salvarVeiculo()">Confirmar Cadastro</button>
         </div>
     </div>
 
     <div id="view-estoque" class="view" style="display:none;">
-        <h1>Estoque Atual</h1>
+        <h1>Estoques e Pendências</h1>
         <div id="listaEstoque"></div>
     </div>
 </main>
@@ -59,41 +56,28 @@
             id: Date.now(),
             modelo: document.getElementById('cModelo').value,
             placa: document.getElementById('cPlaca').value,
-            renavam: document.getElementById('cRenavam').value,
-            ipva: document.getElementById('cIpva').value,
-            multas: document.getElementById('cMultas').value
+            ipvaPendente: document.getElementById('cIpva').checked,
+            multaPendente: document.getElementById('cMultas').checked
         };
         db.push(v);
         localStorage.setItem('mer_estoque', JSON.stringify(db));
-        alert('Veículo cadastrado!');
+        alert('Veículo salvo com alerta de pendência se selecionado!');
         location.reload();
     }
 
     function renderEstoque() {
         const div = document.getElementById('listaEstoque');
-        div.innerHTML = db.map(v => `<div class="card">${v.modelo} | Placa: ${v.placa} | IPVA: ${v.ipva}</div>`).join('');
+        div.innerHTML = db.map(v => {
+            // A LÓGICA DO ALERTA:
+            const temPendencia = v.ipvaPendente || v.multaPendente;
+            return `
+                <div class="card ${temPendencia ? 'alerta' : ''}">
+                    <strong>${v.modelo}</strong> (${v.placa})
+                    ${temPendencia ? '<span style="color:var(--error); margin-left:10px;">⚠️ PENDENTE</span>' : '<span style="color:var(--ok); margin-left:10px;">✅ EM DIA</span>'}
+                </div>
+            `;
+        }).join('');
     }
-
-    // BOTÃO EXPORTAR CORRIGIDO
-    document.getElementById('btnExportar').onclick = () => {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-        const a = document.createElement('a');
-        a.href = dataStr;
-        a.download = "backup_crm.json";
-        a.click();
-    };
-
-    // BOTÃO IMPORTAR CORRIGIDO
-    document.getElementById('btnImportar').onclick = () => document.getElementById('inputImportar').click();
-    document.getElementById('inputImportar').onchange = (e) => {
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-            db = JSON.parse(evt.target.result);
-            localStorage.setItem('mer_estoque', JSON.stringify(db));
-            location.reload();
-        };
-        reader.readAsText(e.target.files[0]);
-    };
 </script>
 </body>
 </html>
