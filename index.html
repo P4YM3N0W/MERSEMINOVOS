@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
     <title>MeR Seminovos | CRM Pro</title>
@@ -9,29 +9,20 @@
     <header>
         <div class="logo">MeR Seminovos CRM</div>
         <nav>
-            <button class="nav-btn" onclick="view('cadastro')">➕ Novo Cadastro</button>
-            <button class="nav-btn" onclick="view('estoque')">📦 Estoque</button>
-            <button class="nav-btn" onclick="exportarBackup()">💾 Backup/Exportar</button>
-            <button class="nav-btn" onclick="document.getElementById('fileInput').click()">📥 Importar</button>
-            <input type="file" id="fileInput" hidden onchange="importar(event)">
+            <button class="nav-btn" onclick="view('cadastro')">Novo Veículo</button>
+            <button class="nav-btn" onclick="view('estoque')">Estoque</button>
+            <button class="nav-btn" onclick="backup()">Backup</button>
         </nav>
     </header>
 
-    <main>
+    <main id="app">
         <div id="cadastro" class="view">
             <div class="card">
-                <h2>Veículo</h2>
+                <h2>Dados do Veículo</h2>
                 <input type="hidden" id="editIndex" value="-1">
-                <input type="text" id="mModelo" placeholder="Modelo">
-                <input type="text" id="mPlaca" placeholder="Placa (Chave)">
-                <input type="text" id="mChassi" placeholder="Chassi">
-                <input type="text" id="mRenavam" placeholder="Renavam">
-                <input type="text" id="mTelAtual" placeholder="Tel. Dono Atual">
-                <input type="text" id="mTelAnterior" placeholder="Tel. Ex-Dono">
-                <select id="mIpva"><option value="Pago">IPVA Pago</option><option value="Atrasado">IPVA Atrasado</option></select>
-                <select id="mMulta"><option value="Sem">Sem Multas</option><option value="Pendente">Multa Pendente</option></select>
-                <input type="number" id="mValor" placeholder="Valor Pendência (R$)">
-                <button class="btn-main" onclick="salvar()">Salvar Veículo</button>
+                <input type="text" id="modelo" placeholder="Modelo">
+                <input type="text" id="placa" placeholder="Placa">
+                <button class="btn-main" onclick="salvar()">Salvar Cadastro</button>
             </div>
         </div>
         <div id="estoque" class="view" style="display:none;">
